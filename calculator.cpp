@@ -316,7 +316,7 @@ public:
         return;
       }
       if (token.getKind() == StatementEnd) {
-        break;
+        return;
       } else {
         std::cerr << "Syntax Error" << std::endl;
         return;
