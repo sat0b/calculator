@@ -169,8 +169,6 @@ public:
       Token token(str);
       tokens.push_back(token);
     }
-    Token token(End);
-    tokens.push_back(token);
     itr = tokens.begin();
     iend = tokens.end();
   };
@@ -194,32 +192,42 @@ private:
   Token token;
   std::stack<int> stack;
   std::map<std::string, int> variables;
+  bool err;
 
   void next() { token = tokenizer.nextToken(); }
 
-  bool checkKind(TokenKind kind) { return token.getKind() == kind; }
+  void checkKind(TokenKind kind) {
+    if (token.getKind() != kind)
+      err = true;
+  }
 
-  bool statement() {
+  void statement() {
     if (token.getKind() == Variable) {
       std::string name = token.getName();
       next();
-      if (!checkKind(Assign))
-        return false;
+      checkKind(Assign);
+      if (err)
+        return;
       next();
       expression();
       variables[name] = stack.top();
       stack.pop();
-      return true;
     } else if (token.getKind() == Print) {
       next();
-      if (!checkKind(Variable))
-        return false;
+      checkKind(Variable);
+      if (err)
+        return;
+      // Get variable name
       std::string name = token.getName();
-      std::cout << variables[name] << std::endl;
+      // Check format : print a;
       next();
-      return true;
+      checkKind(StatementEnd);
+      if (err)
+        return;
+      // Print variable
+      std::cout << variables[name] << std::endl;
     } else {
-      return false;
+      err = true;
     }
   }
 
@@ -254,7 +262,9 @@ private:
     case LeftBracket:
       next();
       expression();
-      assert(token.getKind() == RightBracket);
+      checkKind(RightBracket);
+      if (err)
+        return;
       break;
     default:
       break;
@@ -293,30 +303,25 @@ private:
   }
 
 public:
-  bool run(std::string line) {
+  void run(std::string line) {
     tokenizer.init(line);
+    // tokenizer.showTokens();
+    err = false;
 
     while (true) {
-      // showVariableTable();
       next();
-      if (token.getKind() == End) {
-        break;
+      statement();
+      if (err) {
+        std::cerr << "Syntax Error " << std::endl;
+        return;
       }
-      if (!statement()) {
+      if (token.getKind() == StatementEnd) {
+        break;
+      } else {
         std::cerr << "Syntax Error" << std::endl;
-        next(); // for StatementEnd
-        continue;
-      }
-      assert(token.getKind() == StatementEnd || token.getKind() == End);
-      if (token.getKind() == End) {
-        break;
+        return;
       }
     }
-    while (stack.size() > 0) {
-      std::cout << stack.top() << std::endl;
-      stack.pop();
-    }
-    return true;
   }
 };
 
