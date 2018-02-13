@@ -30,7 +30,7 @@ private:
   TokenKind kind;
   std::string token;
 
-  TokenKind getTokenKind(std::string token) {
+  TokenKind getTokenKind(std::string token) const {
     if (all_of(token.cbegin(), token.cend(), isdigit))
       return Integer;
     if (token == "+")
@@ -54,7 +54,7 @@ private:
     return Variable;
   }
 
-  std::string getSymbolString() {
+  std::string getSymbolString() const {
     switch (kind) {
     case Integer:
       return "[Integer]";
@@ -98,16 +98,16 @@ public:
     this->token = "";
   }
 
-  TokenKind getKind() { return kind; }
+  TokenKind getKind() const { return kind; }
 
-  int getValue() {
+  int getValue() const {
     if (std::all_of(token.cbegin(), token.cend(), isdigit)) {
       return std::stoi(token);
     }
     return 0;
   }
 
-  std::string getName() { return this->token; }
+  std::string getName() const { return this->token; }
 
   std::string to_string() {
     std::string ret = getSymbolString();
@@ -128,7 +128,7 @@ private:
   std::vector<Token>::iterator iend;
   const std::vector<char> operators{'+', '-', '*', '/', '(', ')', '=', ';'};
 
-  bool checkOperator(char c) {
+  bool checkOperator(char c) const {
     return std::any_of(operators.cbegin(), operators.cend(), [=](int x) {
       if (x == c)
         return true;
@@ -138,7 +138,7 @@ private:
   }
 
 public:
-  void init(std::string code) {
+  void init(const std::string &code) {
     tokens.clear();
     int i = 0;
     while (i < code.length()) {
@@ -180,7 +180,7 @@ public:
     return Token::getEndToken();
   }
 
-  void showTokens() {
+  void showTokens() const {
     for (auto t : tokens) {
       std::cout << t.to_string() << std::endl;
     }
@@ -197,7 +197,7 @@ private:
 
   void next() { token = tokenizer.nextToken(); }
 
-  void checkKind(TokenKind kind) {
+  void checkKind(const TokenKind kind) {
     if (token.getKind() != kind)
       err = true;
   }
@@ -273,7 +273,7 @@ private:
     token = tokenizer.nextToken();
   }
 
-  void operate(TokenKind op) {
+  void operate(const TokenKind op) {
     int d2 = stack.top();
     stack.pop();
     int d1 = stack.top();
@@ -297,14 +297,14 @@ private:
     }
   }
 
-  void showVariableTable() {
+  void showVariableTable() const {
     for (auto v : variables) {
       std::cout << v.first << " : " << v.second << std::endl;
     }
   }
 
 public:
-  void run(std::string line) {
+  void run(const std::string &line) {
     tokenizer.init(line);
     // tokenizer.showTokens();
     err = false;
@@ -331,7 +331,7 @@ void repl() {
   std::string line;
   std::cout << ">> ";
   while (getline(std::cin, line)) {
-    int n = line.length() - 1;
+    const int n = line.length() - 1;
     if (line[n] != '\n' && line[n] != ';')
       line += ";";
     parser.run(line);
@@ -339,7 +339,7 @@ void repl() {
   }
 }
 
-void run(std::string fileName) {
+void run(const std::string &fileName) {
   std::ifstream ifs(fileName);
   if (!ifs) {
     std::cerr << "Cannot open " << fileName << std::endl;
@@ -348,7 +348,7 @@ void run(std::string fileName) {
   Parser parser;
   std::string line;
   while (getline(ifs, line)) {
-    int n = line.length() - 1;
+    const int n = line.length() - 1;
     if (line[n] != '\n' && line[n] != ';')
       line += ";";
     parser.run(line);
@@ -359,7 +359,7 @@ int main(int argc, char **argv) {
   if (argc == 1) {
     repl();
   } else if (argc == 2) {
-    std::string fileName = std::string(argv[1]);
+    const std::string fileName = std::string(argv[1]);
     run(fileName);
   }
 }
