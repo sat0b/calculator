@@ -30,7 +30,7 @@ private:
   TokenKind kind;
   std::string token;
 
-  TokenKind getTokenKind(std::string token) const {
+  TokenKind getTokenKind(const std::string &token) const {
     if (all_of(token.cbegin(), token.cend(), isdigit))
       return Integer;
     if (token == "+")
