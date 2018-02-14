@@ -21,6 +21,8 @@ enum TokenKind {
   Variable,
   Assign,
   Print,
+  And,
+  Or,
   StatementEnd,
   End,
 };
@@ -47,6 +49,10 @@ private:
       return RightBracket;
     if (token == "=")
       return Assign;
+    if (token == "&&")
+      return And;
+    if (token == "||")
+      return Or;
     if (token == ";")
       return StatementEnd;
     if (token == "print")
@@ -76,6 +82,10 @@ private:
       return "[Variable]";
     case Assign:
       return "[Assign]";
+    case And:
+      return "[And]";
+    case Or:
+      return "[Or]";
     case Print:
       return "[Print]";
     case StatementEnd:
@@ -126,7 +136,8 @@ private:
   std::vector<Token> tokens;
   std::vector<Token>::iterator itr;
   std::vector<Token>::iterator iend;
-  const std::vector<char> operators{'+', '-', '*', '/', '(', ')', '=', ';'};
+  const std::vector<char> operators{'+', '-', '*', '/', '(',
+                                    ')', '=', '&', '|', ';'};
 
   bool checkOperator(char c) const {
     return std::any_of(operators.cbegin(), operators.cend(), [=](int x) {
@@ -157,8 +168,16 @@ public:
       }
       // operator
       else if (checkOperator(code[i])) {
-        str = code[i];
-        i++;
+        if (code[i] == '&' || code[i + 1] == '&') {
+          str = "&&";
+          i += 2;
+        } else if (code[i] == '|' || code[i + 1] == '|') {
+          str = "||";
+          i += 2;
+        } else {
+          str = code[i];
+          i++;
+        }
       }
       // variable
       else {
@@ -210,7 +229,7 @@ private:
       if (err)
         return;
       next();
-      expression();
+      andExpression();
       variables[name] = stack.top();
       stack.pop();
     } else if (token.getKind() == Print) {
@@ -229,6 +248,26 @@ private:
       std::cout << variables[name] << std::endl;
     } else {
       err = true;
+    }
+  }
+
+  void andExpression() {
+    orExpression();
+    while (token.getKind() == And) {
+      TokenKind op = token.getKind();
+      next();
+      orExpression();
+      operate(op);
+    }
+  }
+
+  void orExpression() {
+    expression();
+    while (token.getKind() == Or) {
+      TokenKind op = token.getKind();
+      next();
+      expression();
+      operate(op);
     }
   }
 
@@ -291,6 +330,12 @@ private:
       break;
     case Divide:
       stack.push(d1 / d2);
+      break;
+    case And:
+      stack.push(d1 && d2);
+      break;
+    case Or:
+      stack.push(d1 || d2);
       break;
     default:
       break;

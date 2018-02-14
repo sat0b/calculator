@@ -3,17 +3,19 @@
 clang++ -std=c++14 -Wall calculator.cpp -o calculator
 
 function assert-equal() {
-    argument=$1
-    expect=$2
-    actual=$(./calculator $argument)
+    argument="$1"
+    expect="$2"
+    actual=$(./calculator "$argument")
     if [ ! "$actual" = "$expect" ]; then
-        echo "$actual expected, but got $actual"
+        echo "$argument, $expect expected, but got $actual"
         exit 1
     fi
 }
 
-assert-equal test/ex1.ca "30"
-assert-equal test/ex2.ca "1300"
-assert-equal test/ex3.ca "245"
+assert-equal test/ex1.ca 30
+assert-equal test/ex2.ca 1300
+assert-equal test/ex3.ca 245
+assert-equal test/ex4.ca 0
+assert-equal test/ex5.ca 1
 
 echo OK
