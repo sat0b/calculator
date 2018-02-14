@@ -229,7 +229,7 @@ private:
       if (err)
         return;
       next();
-      andExpression();
+      orExpression();
       variables[name] = stack.top();
       stack.pop();
     } else if (token.getKind() == Print) {
@@ -251,19 +251,19 @@ private:
     }
   }
 
-  void andExpression() {
-    orExpression();
-    while (token.getKind() == And) {
+  void orExpression() {
+    andExpression();
+    while (token.getKind() == Or) {
       TokenKind op = token.getKind();
       next();
-      orExpression();
+      andExpression();
       operate(op);
     }
   }
 
-  void orExpression() {
+  void andExpression() {
     expression();
-    while (token.getKind() == Or) {
+    while (token.getKind() == And) {
       TokenKind op = token.getKind();
       next();
       expression();
