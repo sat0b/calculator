@@ -335,7 +335,6 @@ private:
   }
 
   void equalExpression() {
-
     thanExpression();
     while (token.getKind() == Equal || token.getKind() == NotEqual) {
       TokenKind op = token.getKind();
