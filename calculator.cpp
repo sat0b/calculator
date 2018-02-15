@@ -23,9 +23,65 @@ enum TokenKind {
   Print,
   And,
   Or,
+  Equal,
+  NotEqual,
+  LessThan,
+  LessEqual,
+  GreaterThan,
+  GreaterEqual,
+  Mod,
   StatementEnd,
   End,
 };
+
+std::string getTokenString(TokenKind kind) {
+  switch (kind) {
+  case Integer:
+    return "[Integer]";
+  case Product:
+    return "[Product]";
+  case Plus:
+    return "[Plus]";
+  case Divide:
+    return "[Divide]";
+  case Minus:
+    return "[Minus]";
+  case Symbol:
+    return "[Symbol]";
+  case LeftBracket:
+    return "[LeftBracket]";
+  case RightBracket:
+    return "[RightBracket]";
+  case Variable:
+    return "[Variable]";
+  case Assign:
+    return "[Assign]";
+  case And:
+    return "[And]";
+  case Or:
+    return "[Or]";
+  case Equal:
+    return "[Equal]";
+  case NotEqual:
+    return "[NotEqual]";
+  case LessThan:
+    return "[LessThan]";
+  case LessEqual:
+    return "[LessEqual]";
+  case GreaterThan:
+    return "[GreaterThan]";
+  case GreaterEqual:
+    return "[GreaterEqual]";
+  case Mod:
+    return "[Mod]";
+  case Print:
+    return "[Print]";
+  case StatementEnd:
+    return "[StatementEnd]";
+  case End:
+    return "[End]";
+  }
+}
 
 class Token {
 private:
@@ -53,46 +109,25 @@ private:
       return And;
     if (token == "||")
       return Or;
+    if (token == "==")
+      return Equal;
+    if (token == "!=")
+      return NotEqual;
+    if (token == "<")
+      return LessThan;
+    if (token == "<=")
+      return LessEqual;
+    if (token == ">")
+      return GreaterThan;
+    if (token == ">=")
+      return GreaterEqual;
+    if (token == "%")
+      return Mod;
     if (token == ";")
       return StatementEnd;
     if (token == "print")
       return Print;
     return Variable;
-  }
-
-  std::string getSymbolString() const {
-    switch (kind) {
-    case Integer:
-      return "[Integer]";
-    case Product:
-      return "[Product]";
-    case Plus:
-      return "[Plus]";
-    case Divide:
-      return "[Divide]";
-    case Minus:
-      return "[Minus]";
-    case Symbol:
-      return "[Symbol]";
-    case LeftBracket:
-      return "[LeftBracket]";
-    case RightBracket:
-      return "[RightBracket]";
-    case Variable:
-      return "[Variable]";
-    case Assign:
-      return "[Assign]";
-    case And:
-      return "[And]";
-    case Or:
-      return "[Or]";
-    case Print:
-      return "[Print]";
-    case StatementEnd:
-      return "[StatementEnd]";
-    case End:
-      return "[End]";
-    }
   }
 
 public:
@@ -120,7 +155,7 @@ public:
   std::string getName() const { return this->token; }
 
   std::string to_string() {
-    std::string ret = getSymbolString();
+    std::string ret = getTokenString(kind);
     return ret + " " + token;
   }
 
@@ -136,8 +171,8 @@ private:
   std::vector<Token> tokens;
   std::vector<Token>::iterator itr;
   std::vector<Token>::iterator iend;
-  const std::vector<char> operators{'+', '-', '*', '/', '(',
-                                    ')', '=', '&', '|', ';'};
+  const std::vector<char> operators{'+', '-', '*', '/', '(', ')', '=',
+                                    '&', '|', ';', '!', '%', '<', '>'};
 
   bool checkOperator(char c) const {
     return std::any_of(operators.cbegin(), operators.cend(), [=](int x) {
@@ -168,7 +203,35 @@ public:
       }
       // operator
       else if (checkOperator(code[i])) {
-        if (code[i] == '&' || code[i + 1] == '&') {
+        // TODO range check code[i + 1]
+        if (code[i] == '=') {
+          if (code[i + 1] == '=') {
+            str = "==";
+            i += 2;
+          } else {
+            str = "=";
+            i++;
+          }
+        } else if (code[i] == '<') {
+          if (code[i + 1] == '=') {
+            str = "<=";
+            i += 2;
+          } else {
+            str = "<";
+            i++;
+          }
+        } else if (code[i] == '>') {
+          if (code[i + 1] == '=') {
+            str = ">=";
+            i += 2;
+          } else {
+            str = "<";
+            i++;
+          }
+        } else if (code[i] == '!' && code[i + 1] == '=') {
+          str = "!=";
+          i += 2;
+        } else if (code[i] == '&' || code[i + 1] == '&') {
           str = "&&";
           i += 2;
         } else if (code[i] == '|' || code[i + 1] == '|') {
@@ -262,8 +325,30 @@ private:
   }
 
   void andExpression() {
-    expression();
+    equalExpression();
     while (token.getKind() == And) {
+      TokenKind op = token.getKind();
+      next();
+      equalExpression();
+      operate(op);
+    }
+  }
+
+  void equalExpression() {
+
+    thanExpression();
+    while (token.getKind() == Equal || token.getKind() == NotEqual) {
+      TokenKind op = token.getKind();
+      next();
+      thanExpression();
+      operate(op);
+    }
+  }
+
+  void thanExpression() {
+    expression();
+    while (token.getKind() == LessThan || token.getKind() == LessEqual ||
+           token.getKind() == GreaterThan || token.getKind() == GreaterEqual) {
       TokenKind op = token.getKind();
       next();
       expression();
@@ -283,7 +368,8 @@ private:
 
   void term() {
     factor();
-    while (token.getKind() == Product || token.getKind() == Divide) {
+    while (token.getKind() == Product || token.getKind() == Divide ||
+           token.getKind() == Mod) {
       TokenKind op = token.getKind();
       next();
       factor();
@@ -337,7 +423,30 @@ private:
     case Or:
       stack.push(d1 || d2);
       break;
+    case Equal:
+      stack.push(d1 == d2);
+      break;
+    case NotEqual:
+      stack.push(d1 != d2);
+      break;
+    case LessThan:
+      stack.push(d1 < d2);
+      break;
+    case LessEqual:
+      stack.push(d1 <= d2);
+      break;
+    case GreaterThan:
+      stack.push(d1 > d2);
+      break;
+    case GreaterEqual:
+      stack.push(d1 >= d2);
+      break;
+    case Mod:
+      stack.push(d1 % d2);
+      break;
     default:
+      std::cerr << "Not Defined operator : " << getTokenString(op) << std::endl;
+      err = 1;
       break;
     }
   }
