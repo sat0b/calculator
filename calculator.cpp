@@ -394,7 +394,7 @@ private:
     default:
       break;
     }
-    token = tokenizer.nextToken();
+    next();
   }
 
   void operate(const TokenKind op) {
