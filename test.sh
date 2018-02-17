@@ -1,7 +1,5 @@
 #!/bin/bash
 
-clang++ -std=c++14 -Wall calculator.cpp -o calculator
-
 function assert-equal() {
     argument="$1"
     expect="$2"
