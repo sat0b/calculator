@@ -168,9 +168,8 @@ public:
 class Tokenizer {
 private:
   std::string code;
+  int p;
   std::vector<Token> tokens;
-  std::vector<Token>::iterator itr;
-  std::vector<Token>::iterator iend;
   const std::vector<char> operators{'+', '-', '*', '/', '(', ')', '=',
                                     '&', '|', ';', '!', '%', '<', '>'};
 
@@ -252,13 +251,12 @@ public:
       Token token(str);
       tokens.push_back(token);
     }
-    itr = tokens.begin();
-    iend = tokens.end();
+    p = 0;
   };
 
   Token nextToken() {
-    if (itr != iend)
-      return *itr++;
+    if (p < tokens.size())
+      return tokens[p++];
     return Token::getEndToken();
   }
 
