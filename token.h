@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include <vector>
 
@@ -52,6 +54,8 @@ private:
   std::vector<Token> tokens;
   const std::vector<char> operators{'+', '-', '*', '/', '(', ')', '=',
                                     '&', '|', ';', '!', '%', '<', '>'};
+  const std::vector<std::string> twoLenthOperators{
+      "==", "!=", "<=", ">=", "&&", "||"};
   bool checkOperator(char c) const;
 
 public:

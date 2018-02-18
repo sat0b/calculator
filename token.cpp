@@ -1,4 +1,4 @@
-#include "Token.h"
+#include "token.h"
 #include <iostream>
 #include <vector>
 
@@ -151,40 +151,19 @@ void Tokenizer::init(const std::string &code) {
     }
     // operator
     else if (checkOperator(code[i])) {
-      // TODO range check code[i + 1]
-      if (code[i] == '=') {
-        if (code[i + 1] == '=') {
-          str = "==";
+      if (i + 1 < code.length()) {
+        std::string subcode = code.substr(i, 2);
+        auto itr = std::find(twoLenthOperators.cbegin(),
+                             twoLenthOperators.cend(), subcode);
+        if (itr != twoLenthOperators.cend()) {
+          // two length
+          str = subcode;
           i += 2;
         } else {
-          str = "=";
+          // single length
+          str = code[i];
           i++;
         }
-      } else if (code[i] == '<') {
-        if (code[i + 1] == '=') {
-          str = "<=";
-          i += 2;
-        } else {
-          str = "<";
-          i++;
-        }
-      } else if (code[i] == '>') {
-        if (code[i + 1] == '=') {
-          str = ">=";
-          i += 2;
-        } else {
-          str = "<";
-          i++;
-        }
-      } else if (code[i] == '!' && code[i + 1] == '=') {
-        str = "!=";
-        i += 2;
-      } else if (code[i] == '&' || code[i + 1] == '&') {
-        str = "&&";
-        i += 2;
-      } else if (code[i] == '|' || code[i + 1] == '|') {
-        str = "||";
-        i += 2;
       } else {
         str = code[i];
         i++;
