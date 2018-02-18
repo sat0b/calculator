@@ -145,8 +145,7 @@ void Tokenizer::init(const std::string &code) {
     // digit
     if (isdigit(code[i])) {
       while (isdigit(code[i])) {
-        str += code[i];
-        i++;
+        str += code[i++];
       }
     }
     // operator
@@ -161,19 +160,16 @@ void Tokenizer::init(const std::string &code) {
           i += 2;
         } else {
           // single length
-          str = code[i];
-          i++;
+          str = code[i++];
         }
       } else {
-        str = code[i];
-        i++;
+        str = code[i++];
       }
     }
     // variable
     else {
       while (code[i] != ' ' && !checkOperator(code[i])) {
-        str += code[i];
-        i++;
+        str += code[i++];
       }
     }
     Token token(str);
