@@ -11,6 +11,7 @@ private:
   std::stack<int> stack;
   std::map<std::string, int> variables;
   bool err;
+  bool replMode;
 
   void next();
   void checkKind(const TokenKind kind);
@@ -26,5 +27,5 @@ private:
   void showVariableTable() const;
 
 public:
-  void run(const std::string &line);
+  void run(const std::string &line, bool replMode);
 };

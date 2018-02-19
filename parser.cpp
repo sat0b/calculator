@@ -12,13 +12,27 @@ void Parser::statement() {
   if (token.getKind() == Variable) {
     std::string name = token.getName();
     next();
-    checkKind(Assign);
-    if (err)
-      return;
-    next();
-    orExpression();
-    variables[name] = stack.top();
-    stack.pop();
+    if (token.getKind() == Assign) {
+      checkKind(Assign);
+      if (err)
+        return;
+      next();
+      orExpression();
+      variables[name] = stack.top();
+      stack.pop();
+    } else if (token.getKind() == StatementEnd) {
+      if (replMode) {
+        if (variables.count(name) > 0) {
+          std::cout << variables[name] << std::endl;
+        } else {
+          std::cout << "No such a variables" << std::endl;
+        }
+      } else {
+        err = true;
+      }
+    } else {
+      err = true;
+    }
   } else if (token.getKind() == Print) {
     next();
     checkKind(Variable);
@@ -180,10 +194,11 @@ void Parser::showVariableTable() const {
   }
 }
 
-void Parser::run(const std::string &line) {
+void Parser::run(const std::string &line, bool replMode) {
   tokenizer.init(line);
   // tokenizer.showTokens();
   err = false;
+  this->replMode = replMode;
 
   while (true) {
     next();

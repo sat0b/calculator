@@ -12,6 +12,7 @@
 #include <vector>
 
 void repl() {
+  bool replMode = true;
   Parser parser;
   std::string line;
   std::cout << ">> ";
@@ -19,12 +20,13 @@ void repl() {
     const int n = line.length() - 1;
     if (line[n] != '\n' && line[n] != ';')
       line += ";";
-    parser.run(line);
+    parser.run(line, replMode);
     std::cout << ">> ";
   }
 }
 
 void run(const std::string &fileName) {
+  bool replMode = false;
   std::ifstream ifs(fileName);
   if (!ifs) {
     std::cerr << "Cannot open " << fileName << std::endl;
@@ -36,7 +38,7 @@ void run(const std::string &fileName) {
     const int n = line.length() - 1;
     if (line[n] != '\n' && line[n] != ';')
       line += ";";
-    parser.run(line);
+    parser.run(line, replMode);
   }
 }
 
