@@ -4,13 +4,29 @@
 #include <map>
 #include <stack>
 
+enum class ErrorType { SyntaxError, NameError, SymbolError };
+
+class Error {
+private:
+  bool err = false;
+  ErrorType errType;
+  std::string errMessage;
+
+public:
+  bool state();
+  void printErrorMessage();
+  void setSyntaxError(std::string msg);
+  void setNameError(std::string msg);
+  void setSymbolError(std::string msg);
+};
+
 class Parser {
 private:
   Tokenizer tokenizer;
   Token token;
   std::stack<int> stack;
   std::map<std::string, int> variables;
-  bool err;
+  Error error;
   bool replMode;
 
   void next();

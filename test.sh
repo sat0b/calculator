@@ -3,7 +3,7 @@
 function assert-equal() {
     argument="$1"
     expect="$2"
-    actual=$(./calculator "$argument")
+    actual=$(./calculator "$argument" 2>&1)
     if [ ! "$actual" = "$expect" ]; then
         echo "$argument, $expect expected, but got $actual"
         exit 1
@@ -18,5 +18,7 @@ assert-equal test/ex5.ca 1
 assert-equal test/ex6.ca 2
 assert-equal test/ex7.ca 1
 assert-equal test/ex8.ca 2
+assert-equal test/ex9.ca "Name Error, no such a variable a"
+assert-equal test/ex10.ca "Syntax Error"
 
 echo OK

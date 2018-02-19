@@ -1,11 +1,47 @@
 #include "parser.h"
 #include <iostream>
 
+void Error::printErrorMessage() {
+  switch (errType) {
+  case ErrorType::SyntaxError:
+    std::cerr << "Syntax Error" << std::endl;
+    break;
+  case ErrorType::NameError:
+    std::cerr << "Name Error, no such a variable " << errMessage << std::endl;
+    break;
+  case ErrorType::SymbolError:
+    std::cerr << "Symbol Error" << errMessage << std::endl;
+  default:
+    std::cerr << "Error" << std::endl;
+    break;
+  }
+}
+
+void Error::setSyntaxError(std::string msg) {
+  err = true;
+  errType = ErrorType::SyntaxError;
+  errMessage = msg;
+}
+
+void Error::setNameError(std::string msg) {
+  err = true;
+  errType = ErrorType::NameError;
+  errMessage = msg;
+}
+
+void Error::setSymbolError(std::string msg) {
+  err = true;
+  errType = ErrorType::SymbolError;
+  errMessage = msg;
+}
+
+bool Error::state() { return err; }
+
 void Parser::next() { token = tokenizer.nextToken(); }
 
 void Parser::checkKind(const TokenKind kind) {
   if (token.getKind() != kind)
-    err = true;
+    error.setSyntaxError("");
 }
 
 void Parser::statement() {
@@ -14,7 +50,7 @@ void Parser::statement() {
     next();
     if (token.getKind() == Assign) {
       checkKind(Assign);
-      if (err)
+      if (error.state())
         return;
       next();
       orExpression();
@@ -25,30 +61,34 @@ void Parser::statement() {
         if (variables.count(name) > 0) {
           std::cout << variables[name] << std::endl;
         } else {
-          std::cout << "No such a variables" << std::endl;
+          error.setNameError(name);
         }
       } else {
-        err = true;
+        error.setSyntaxError("");
       }
     } else {
-      err = true;
+      error.setSyntaxError("");
     }
   } else if (token.getKind() == Print) {
     next();
     checkKind(Variable);
-    if (err)
+    if (error.state())
       return;
     // Get variable name
     std::string name = token.getName();
     // Check format : print a;
     next();
     checkKind(StatementEnd);
-    if (err)
+    if (error.state())
       return;
     // Print variable
-    std::cout << variables[name] << std::endl;
+    if (variables.count(name) > 0) {
+      std::cout << variables[name] << std::endl;
+    } else {
+      error.setNameError(name);
+    }
   } else {
-    err = true;
+    error.setSyntaxError("");
   }
 }
 
@@ -126,7 +166,7 @@ void Parser::factor() {
     next();
     expression();
     checkKind(RightBracket);
-    if (err)
+    if (error.state())
       return;
     break;
   default:
@@ -182,8 +222,8 @@ void Parser::operate(const TokenKind op) {
     stack.push(d1 % d2);
     break;
   default:
-    std::cerr << "Not Defined operator : " << getTokenString(op) << std::endl;
-    err = 1;
+    std::string msg = "Not Defined operator : " + getTokenString(op);
+    error.setSymbolError(msg);
     break;
   }
 }
@@ -197,20 +237,19 @@ void Parser::showVariableTable() const {
 void Parser::run(const std::string &line, bool replMode) {
   tokenizer.init(line);
   // tokenizer.showTokens();
-  err = false;
   this->replMode = replMode;
 
   while (true) {
     next();
     statement();
-    if (err) {
-      std::cerr << "Syntax Error " << std::endl;
+    if (error.state()) {
+      error.printErrorMessage();
       return;
     }
     if (token.getKind() == StatementEnd) {
       return;
     } else {
-      std::cerr << "Syntax Error" << std::endl;
+      error.printErrorMessage();
       return;
     }
   }
