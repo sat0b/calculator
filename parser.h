@@ -1,8 +1,8 @@
 #pragma once
 
+#include "stack.h"
 #include "token.h"
 #include <map>
-#include <stack>
 
 enum class ErrorType { SyntaxError, NameError, SymbolError };
 
@@ -25,7 +25,7 @@ class Parser {
 private:
   Tokenizer tokenizer;
   Token token;
-  std::stack<int> stack;
+  Stack stack;
   std::map<std::string, int> variables;
   Error error;
   bool replMode;

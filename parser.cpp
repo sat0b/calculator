@@ -60,12 +60,10 @@ void Parser::statement() {
       checkKind(StatementEnd);
       if (error.state())
         return;
-      if (stack.size() > 0) {
-        variables[name] = stack.top();
-        stack.pop();
-      } else {
+      if (stack.exist())
+        variables[name] = stack.pop();
+      else
         error.setSyntaxError("");
-      }
     } else if (token.getKind() == StatementEnd) {
       if (replMode) {
         if (variables.count(name) > 0) {
@@ -88,12 +86,13 @@ void Parser::statement() {
     orExpression();
     if (error.state())
       return;
-    if (stack.size() > 0) {
-      std::cout << stack.top() << std::endl;
-      stack.pop();
-    } else {
+    checkKind(StatementEnd);
+    if (error.state())
+      return;
+    if (stack.exist())
+      std::cout << stack.pop() << std::endl;
+    else
       error.setSyntaxError("");
-    }
   } else {
     error.setSyntaxError("");
   }
@@ -188,10 +187,8 @@ void Parser::factor() {
 }
 
 void Parser::operate(const TokenKind op) {
-  int d2 = stack.top();
-  stack.pop();
-  int d1 = stack.top();
-  stack.pop();
+  int d2 = stack.pop();
+  int d1 = stack.pop();
 
   switch (op) {
   case Plus:
@@ -249,6 +246,7 @@ void Parser::showVariableTable() const {
 void Parser::run(const std::string &line, bool replMode) {
   tokenizer.init(line);
   error.reset();
+  stack.clear();
   // tokenizer.showTokens();
   this->replMode = replMode;
 

@@ -8,7 +8,6 @@
 #include <istream>
 #include <map>
 #include <sstream>
-#include <stack>
 #include <vector>
 
 void repl() {
