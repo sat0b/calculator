@@ -45,13 +45,12 @@ void Parser::checkKind(const TokenKind kind) {
 }
 
 void Parser::statement() {
+  if (error.state())
+    return;
   if (token.getKind() == Variable) {
     std::string name = token.getName();
     next();
     if (token.getKind() == Assign) {
-      checkKind(Assign);
-      if (error.state())
-        return;
       next();
       orExpression();
       variables[name] = stack.top();

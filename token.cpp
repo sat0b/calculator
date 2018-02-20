@@ -48,6 +48,24 @@ std::string getTokenString(TokenKind kind) {
     return "[StatementEnd]";
   case End:
     return "[End]";
+  case CodeEnd:
+    return "[CodeEnd]";
+  case For:
+    return "[For]";
+  case While:
+    return "[While]";
+  case If:
+    return "[If]";
+  case ElseIf:
+    return "[ElseIf]";
+  case Else:
+    return "[Else]";
+  case Break:
+    return "[Break]";
+  case Return:
+    return "[Return]";
+  case Function:
+    return "[Function]";
   }
 }
 
@@ -90,6 +108,22 @@ TokenKind Token::getTokenKind(const std::string &token) const {
     return StatementEnd;
   if (token == "print")
     return Print;
+  if (token == "for")
+    return For;
+  if (token == "while")
+    return While;
+  if (token == "if")
+    return If;
+  if (token == "elseif")
+    return ElseIf;
+  if (token == "else")
+    return Else;
+  if (token == "break")
+    return Break;
+  if (token == "return")
+    return Return;
+  if (token == "function")
+    return Function;
   return Variable;
 }
 
@@ -119,8 +153,8 @@ std::string Token::to_string() {
   return ret + " " + token;
 }
 
-Token Token::getEndToken() {
-  Token token(End);
+Token Token::getCodeEndToken() {
+  Token token(CodeEnd);
   return token;
 }
 
@@ -181,7 +215,7 @@ void Tokenizer::init(const std::string &code) {
 Token Tokenizer::nextToken() {
   if (p < tokens.size())
     return tokens[p++];
-  return Token::getEndToken();
+  return Token::getCodeEndToken();
 }
 
 void Tokenizer::showTokens() const {

@@ -24,8 +24,17 @@ enum TokenKind {
   GreaterThan,
   GreaterEqual,
   Mod,
-  StatementEnd,
+  For,
+  While,
+  If,
+  ElseIf,
+  Else,
   End,
+  Break,
+  Return,
+  Function,
+  StatementEnd,
+  CodeEnd,
 };
 
 std::string getTokenString(TokenKind kind);
@@ -44,7 +53,7 @@ public:
   int getValue() const;
   std::string getName() const;
   std::string to_string();
-  static Token getEndToken();
+  static Token getCodeEndToken();
 };
 
 class Tokenizer {
