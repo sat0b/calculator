@@ -35,6 +35,8 @@ void Error::setSymbolError(std::string msg) {
   errMessage = msg;
 }
 
+void Error::reset() { err = false; }
+
 bool Error::state() { return err; }
 
 void Parser::next() { token = tokenizer.nextToken(); }
@@ -53,8 +55,15 @@ void Parser::statement() {
     if (token.getKind() == Assign) {
       next();
       orExpression();
-      variables[name] = stack.top();
-      stack.pop();
+      if (error.state()) {
+        return;
+      }
+      if (stack.size() > 0) {
+        variables[name] = stack.top();
+        stack.pop();
+      } else {
+        error.setSyntaxError("");
+      }
     } else if (token.getKind() == StatementEnd) {
       if (replMode) {
         if (variables.count(name) > 0) {
@@ -70,21 +79,18 @@ void Parser::statement() {
     }
   } else if (token.getKind() == Print) {
     next();
-    checkKind(Variable);
+    if (token.getKind() != Variable && token.getKind() != Integer) {
+      error.setSyntaxError("");
+      return;
+    }
+    orExpression();
     if (error.state())
       return;
-    // Get variable name
-    std::string name = token.getName();
-    // Check format : print a;
-    next();
-    checkKind(StatementEnd);
-    if (error.state())
-      return;
-    // Print variable
-    if (variables.count(name) > 0) {
-      std::cout << variables[name] << std::endl;
+    if (stack.size() > 0) {
+      std::cout << stack.top() << std::endl;
+      stack.pop();
     } else {
-      error.setNameError(name);
+      error.setSyntaxError("");
     }
   } else {
     error.setSyntaxError("");
@@ -159,7 +165,12 @@ void Parser::factor() {
     stack.push(token.getValue());
     break;
   case Variable:
-    stack.push(variables[token.getName()]);
+    if (variables.count(token.getName()) > 0) {
+      stack.push(variables[token.getName()]);
+    } else {
+      error.setNameError(token.getName());
+      return;
+    }
     break;
   case LeftBracket:
     next();
@@ -235,6 +246,7 @@ void Parser::showVariableTable() const {
 
 void Parser::run(const std::string &line, bool replMode) {
   tokenizer.init(line);
+  error.reset();
   // tokenizer.showTokens();
   this->replMode = replMode;
 

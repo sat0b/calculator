@@ -148,7 +148,7 @@ int Token::getValue() const {
 
 std::string Token::getName() const { return this->token; }
 
-std::string Token::to_string() {
+std::string Token::toString() {
   std::string ret = getTokenString(kind);
   return ret + " " + token;
 }
@@ -220,6 +220,6 @@ Token Tokenizer::nextToken() {
 
 void Tokenizer::showTokens() const {
   for (auto t : tokens) {
-    std::cout << t.to_string() << std::endl;
+    std::cout << t.toString() << std::endl;
   }
 }

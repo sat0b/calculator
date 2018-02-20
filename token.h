@@ -52,7 +52,7 @@ public:
   TokenKind getKind() const;
   int getValue() const;
   std::string getName() const;
-  std::string to_string();
+  std::string toString();
   static Token getCodeEndToken();
 };
 

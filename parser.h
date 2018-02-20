@@ -14,6 +14,7 @@ private:
 
 public:
   bool state();
+  void reset();
   void printErrorMessage();
   void setSyntaxError(std::string msg);
   void setNameError(std::string msg);
