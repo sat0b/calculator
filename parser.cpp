@@ -55,9 +55,11 @@ void Parser::statement() {
     if (token.getKind() == Assign) {
       next();
       orExpression();
-      if (error.state()) {
+      if (error.state())
         return;
-      }
+      checkKind(StatementEnd);
+      if (error.state())
+        return;
       if (stack.size() > 0) {
         variables[name] = stack.top();
         stack.pop();
