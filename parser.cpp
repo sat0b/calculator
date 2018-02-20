@@ -97,15 +97,12 @@ void Parser::printStatement() {
 void Parser::statement() {
   if (error.state())
     return;
-  if (token.getKind() == Variable) {
+  if (token.getKind() == Variable)
     variableStatement();
-    if (error.state())
-      return;
-  } else if (token.getKind() == Print) {
+  else if (token.getKind() == Print)
     printStatement();
-  } else {
+  else
     error.setSyntaxError("");
-  }
 }
 
 void Parser::orExpression() {
