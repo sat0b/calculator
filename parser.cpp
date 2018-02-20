@@ -46,43 +46,11 @@ void Parser::checkKind(const TokenKind kind) {
     error.setSyntaxError("");
 }
 
-void Parser::statement() {
-  if (error.state())
-    return;
-  if (token.getKind() == Variable) {
-    std::string name = token.getName();
+void Parser::variableStatement() {
+  std::string name = token.getName();
+  next();
+  if (token.getKind() == Assign) {
     next();
-    if (token.getKind() == Assign) {
-      next();
-      orExpression();
-      if (error.state())
-        return;
-      checkKind(StatementEnd);
-      if (error.state())
-        return;
-      if (stack.exist())
-        variables[name] = stack.pop();
-      else
-        error.setSyntaxError("");
-    } else if (token.getKind() == StatementEnd) {
-      if (replMode) {
-        if (variables.count(name) > 0) {
-          std::cout << variables[name] << std::endl;
-        } else {
-          error.setNameError(name);
-        }
-      } else {
-        error.setSyntaxError("");
-      }
-    } else {
-      error.setSyntaxError("");
-    }
-  } else if (token.getKind() == Print) {
-    next();
-    if (token.getKind() != Variable && token.getKind() != Integer) {
-      error.setSyntaxError("");
-      return;
-    }
     orExpression();
     if (error.state())
       return;
@@ -90,9 +58,51 @@ void Parser::statement() {
     if (error.state())
       return;
     if (stack.exist())
-      std::cout << stack.pop() << std::endl;
+      variables[name] = stack.pop();
     else
       error.setSyntaxError("");
+  } else if (token.getKind() == StatementEnd) {
+    if (replMode) {
+      if (variables.count(name) > 0) {
+        std::cout << variables[name] << std::endl;
+      } else {
+        error.setNameError(name);
+      }
+    } else {
+      error.setSyntaxError("");
+    }
+  } else {
+    error.setSyntaxError("");
+  }
+}
+
+void Parser::printStatement() {
+  next();
+  if (token.getKind() != Variable && token.getKind() != Integer) {
+    error.setSyntaxError("");
+    return;
+  }
+  orExpression();
+  if (error.state())
+    return;
+  checkKind(StatementEnd);
+  if (error.state())
+    return;
+  if (stack.exist())
+    std::cout << stack.pop() << std::endl;
+  else
+    error.setSyntaxError("");
+}
+
+void Parser::statement() {
+  if (error.state())
+    return;
+  if (token.getKind() == Variable) {
+    variableStatement();
+    if (error.state())
+      return;
+  } else if (token.getKind() == Print) {
+    printStatement();
   } else {
     error.setSyntaxError("");
   }

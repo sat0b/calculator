@@ -42,6 +42,8 @@ private:
   void factor();
   void operate(const TokenKind op);
   void showVariableTable() const;
+  void variableStatement();
+  void printStatement();
 
 public:
   void run(const std::string &line, bool replMode);
