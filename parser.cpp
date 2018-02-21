@@ -94,6 +94,77 @@ void Parser::printStatement() {
     error.setSyntaxError("");
 }
 
+void Parser::numericStatement() {
+  orExpression();
+  if (error.state())
+    return;
+  checkKind(StatementEnd);
+  if (error.state())
+    return;
+  if (stack.exist())
+    std::cout << stack.pop() << std::endl;
+  else
+    error.setSyntaxError("");
+}
+
+void Parser::block() {
+  next();
+  if (error.state())
+    return;
+  while (token.getKind() != ElseIf && token.getKind() != Else &&
+         token.getKind() != End && token.getKind() != Break &&
+         token.getKind() != Return) {
+    statement();
+    next();
+  }
+}
+
+void Parser::forStatement() {}
+
+void Parser::ifStatement() {
+  next();
+  checkKind(LeftBracket);
+  if (error.state())
+    return;
+  next();
+  orExpression();
+  if (error.state())
+    return;
+  checkKind(RightBracket);
+  if (error.state())
+    return;
+
+  // check truth
+  int val = 0;
+  if (stack.exist()) {
+    val = stack.pop();
+  } else {
+    error.setSyntaxError("");
+    return;
+  }
+
+  // check statement end
+  next();
+  checkKind(StatementEnd);
+  if (error.state())
+    return;
+
+  if (val) {
+    block();
+    next();
+  } else {
+    // jump statement
+    skipUntil(ElseIf);
+    skipUntil(Else);
+  }
+}
+
+void Parser::elseifStatement() {}
+
+void Parser::elseStatement() {}
+
+void Parser::skipUntil(TokenKind kind) {}
+
 void Parser::statement() {
   if (error.state())
     return;
@@ -101,6 +172,13 @@ void Parser::statement() {
     variableStatement();
   else if (token.getKind() == Print)
     printStatement();
+  else if (token.getKind() == Integer)
+    numericStatement();
+  else if (token.getKind() == If || token.getKind() == ElseIf ||
+           token.getKind() == Else)
+    ifStatement();
+  else if (token.getKind() == For)
+    forStatement();
   else
     error.setSyntaxError("");
 }
@@ -194,8 +272,19 @@ void Parser::factor() {
 }
 
 void Parser::operate(const TokenKind op) {
-  int d2 = stack.pop();
-  int d1 = stack.pop();
+  int d1, d2;
+  if (stack.exist()) {
+    d2 = stack.pop();
+  } else {
+    error.setSyntaxError("");
+    return;
+  }
+  if (stack.exist()) {
+    d1 = stack.pop();
+  } else {
+    error.setSyntaxError("");
+    return;
+  }
 
   switch (op) {
   case Plus:
@@ -267,6 +356,7 @@ void Parser::run(const std::string &line, bool replMode) {
     if (token.getKind() == StatementEnd) {
       return;
     } else {
+      error.setSyntaxError("line is not terminated by ;");
       error.printErrorMessage();
       return;
     }

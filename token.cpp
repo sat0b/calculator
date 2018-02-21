@@ -124,6 +124,8 @@ TokenKind Token::getTokenKind(const std::string &token) const {
     return Return;
   if (token == "function")
     return Function;
+  if (token == "end")
+    return End;
   return Variable;
 }
 
@@ -141,6 +143,7 @@ TokenKind Token::getKind() const { return kind; }
 
 int Token::getValue() const {
   if (std::all_of(token.cbegin(), token.cend(), isdigit)) {
+    // TODO: integer range check
     return std::stoi(token);
   }
   return 0;

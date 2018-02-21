@@ -44,6 +44,13 @@ private:
   void showVariableTable() const;
   void variableStatement();
   void printStatement();
+  void numericStatement();
+  void block();
+  void forStatement();
+  void ifStatement();
+  void elseifStatement();
+  void elseStatement();
+  void skipUntil(TokenKind kind);
 
 public:
   void run(const std::string &line, bool replMode);
