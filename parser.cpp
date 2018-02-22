@@ -122,9 +122,7 @@ void Parser::block() {
 void Parser::forStatement() {}
 
 void Parser::ifStatement() {
-  next();
-  checkKind(LeftBracket);
-  if (error.state())
+  if (tokenizer.skip(LeftBracket))
     return;
   next();
   orExpression();
@@ -143,10 +141,7 @@ void Parser::ifStatement() {
     return;
   }
 
-  // check statement end
-  next();
-  checkKind(StatementEnd);
-  if (error.state())
+  if (tokenizer.skip(StatementEnd))
     return;
 
   if (val) {

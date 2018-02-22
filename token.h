@@ -71,4 +71,5 @@ public:
   void init(const std::string &code);
   Token nextToken();
   void showTokens() const;
+  bool skip(TokenKind tokenKind);
 };

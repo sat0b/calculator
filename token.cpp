@@ -226,3 +226,10 @@ void Tokenizer::showTokens() const {
     std::cout << t.toString() << std::endl;
   }
 }
+
+bool Tokenizer::skip(TokenKind tokenKind) {
+  Token token = nextToken();
+  if (token.getKind() == tokenKind)
+    return false;
+  return true;
+}
