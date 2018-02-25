@@ -1,4 +1,6 @@
 #include "parser.h"
+#include "lexer.h"
+#include "token.h"
 #include <iostream>
 
 void Error::printErrorMessage() {
@@ -39,7 +41,7 @@ void Error::reset() { err = false; }
 
 bool Error::state() { return err; }
 
-void Parser::next() { token = tokenizer.nextToken(); }
+void Parser::next() { token = lexer.nextToken(); }
 
 void Parser::checkKind(const TokenKind kind) {
   if (token.getKind() != kind)
@@ -122,7 +124,7 @@ void Parser::block() {
 void Parser::forStatement() {}
 
 void Parser::ifStatement() {
-  if (tokenizer.skip(LeftBracket))
+  if (lexer.skip(LeftBracket))
     return;
   next();
   orExpression();
@@ -141,7 +143,7 @@ void Parser::ifStatement() {
     return;
   }
 
-  if (tokenizer.skip(StatementEnd))
+  if (lexer.skip(StatementEnd))
     return;
 
   if (val) {
@@ -335,10 +337,10 @@ void Parser::showVariableTable() const {
 }
 
 void Parser::run(const std::string &line, bool replMode) {
-  tokenizer.init(line);
+  lexer.init(line);
   error.reset();
   stack.clear();
-  // tokenizer.showTokens();
+  // lexer.showTokens();
   this->replMode = replMode;
 
   while (true) {

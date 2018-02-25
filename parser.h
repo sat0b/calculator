@@ -1,5 +1,6 @@
 #pragma once
 
+#include "lexer.h"
 #include "stack.h"
 #include "token.h"
 #include <map>
@@ -23,7 +24,7 @@ public:
 
 class Parser {
 private:
-  Tokenizer tokenizer;
+  Lexer lexer;
   Token token;
   Stack stack;
   std::map<std::string, int> variables;
