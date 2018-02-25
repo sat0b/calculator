@@ -13,5 +13,6 @@ parser.o: parser.cpp parser.h
 stack.o: stack.cpp stack.h
 	$(CXX) -c stack.cpp
 
-test: test.sh calculator
+.PHONY: test
+test: test.sh calculator $(wildcard test/*.ca)
 	./test.sh
