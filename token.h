@@ -4,12 +4,19 @@
 #include <vector>
 
 enum TokenKind {
+  Numeric,
+  Identifier,
+  Keyword,
+  Operator,
+  End,
+
+  // deprecated
+  Symbol,
   Integer,
   Product,
   Plus,
   Divide,
   Minus,
-  Symbol,
   LeftBracket,
   RightBracket,
   Variable,
@@ -29,7 +36,6 @@ enum TokenKind {
   If,
   ElseIf,
   Else,
-  End,
   Break,
   Return,
   Function,
@@ -48,6 +54,7 @@ private:
 public:
   Token(){};
   Token(std::string str);
+  Token(std::string str, TokenKind tokenKind);
   Token(TokenKind kind);
   TokenKind getKind() const;
   int getValue() const;

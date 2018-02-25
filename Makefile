@@ -1,4 +1,4 @@
-CXXFLAGS := -std=c++14 -Wall -g
+CXXFLAGS := -std=c++14 -Wextra -g
 CXX := clang++ $(CXXFLAGS)
 
 calculator: calculator.cpp token.o parser.o stack.o lexer.o

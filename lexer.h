@@ -15,6 +15,12 @@ private:
       "==", "!=", "<=", ">=", "&&", "||"};
   bool checkOperator(char c) const;
   void init();
+  bool skipWhitespace();
+  Token readNum();
+  Token readOperator();
+  Token readIdentifier();
+  Token readKeyword();
+  Token readEnd();
 
 public:
   Lexer(const std::string &code);

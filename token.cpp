@@ -1,73 +1,6 @@
 #include "token.h"
 #include <iostream>
 
-std::string getTokenString(TokenKind kind) {
-  switch (kind) {
-  case Integer:
-    return "[Integer]";
-  case Product:
-    return "[Product]";
-  case Plus:
-    return "[Plus]";
-  case Divide:
-    return "[Divide]";
-  case Minus:
-    return "[Minus]";
-  case Symbol:
-    return "[Symbol]";
-  case LeftBracket:
-    return "[LeftBracket]";
-  case RightBracket:
-    return "[RightBracket]";
-  case Variable:
-    return "[Variable]";
-  case Assign:
-    return "[Assign]";
-  case And:
-    return "[And]";
-  case Or:
-    return "[Or]";
-  case Equal:
-    return "[Equal]";
-  case NotEqual:
-    return "[NotEqual]";
-  case LessThan:
-    return "[LessThan]";
-  case LessEqual:
-    return "[LessEqual]";
-  case GreaterThan:
-    return "[GreaterThan]";
-  case GreaterEqual:
-    return "[GreaterEqual]";
-  case Mod:
-    return "[Mod]";
-  case Print:
-    return "[Print]";
-  case StatementEnd:
-    return "[StatementEnd]";
-  case End:
-    return "[End]";
-  case CodeEnd:
-    return "[CodeEnd]";
-  case For:
-    return "[For]";
-  case While:
-    return "[While]";
-  case If:
-    return "[If]";
-  case ElseIf:
-    return "[ElseIf]";
-  case Else:
-    return "[Else]";
-  case Break:
-    return "[Break]";
-  case Return:
-    return "[Return]";
-  case Function:
-    return "[Function]";
-  }
-}
-
 TokenKind Token::getTokenKind(const std::string &token) const {
   if (all_of(token.cbegin(), token.cend(), isdigit))
     return Integer;
@@ -128,6 +61,9 @@ TokenKind Token::getTokenKind(const std::string &token) const {
   return Variable;
 }
 
+Token::Token(std::string str, TokenKind tokenKind)
+    : token(str), kind(tokenKind) {}
+
 Token::Token(std::string str) {
   this->kind = getTokenKind(str);
   this->token = str;
@@ -149,11 +85,6 @@ int Token::getValue() const {
 }
 
 std::string Token::getName() const { return this->token; }
-
-std::string Token::toString() {
-  std::string ret = getTokenString(kind);
-  return ret + " " + token;
-}
 
 Token Token::getCodeEndToken() {
   Token token(CodeEnd);

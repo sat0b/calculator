@@ -326,7 +326,8 @@ void Parser::operate(const TokenKind op) {
     stack.push(d1 % d2);
     break;
   default:
-    std::string msg = "Not Defined operator : " + getTokenString(op);
+    // std::string msg = "Not Defined operator : " + getTokenString(op);
+    std::string msg = "Not Defined operator";
     error.setSymbolError(msg);
     break;
   }
@@ -342,7 +343,7 @@ void Parser::run() {
   error.reset();
   stack.clear();
   // lexer->showTokens();
-  this->replMode = replMode;
+  // this->replMode = replMode;
 
   while (true) {
     next();
