@@ -8,13 +8,15 @@ private:
   std::string code_;
   int p;
   char c;
+  const char eof = -1;
   std::vector<Token> tokens;
   const std::vector<char> operators{'+', '-', '*', '/', '(', ')', '=',
                                     '&', '|', ';', '!', '%', '<', '>'};
   const std::vector<std::string> twoLenthOperators{
       "==", "!=", "<=", ">=", "&&", "||"};
+  char read();
+  char consume();
   bool checkOperator(char c) const;
-  void init();
   bool skipWhitespace();
   Token readNum();
   Token readOperator();

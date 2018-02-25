@@ -1,6 +1,12 @@
 #include "lexer.h"
 #include <iostream>
 
+//  const std::vector<char> operators{'+', '-', '*', '/', '(', ')', '=',
+//                                    '&', '|', ';', '!', '%', '<', '>'};
+//  const std::vector<std::string> twoLenthOperators{
+//      "==", "!=", "<=", ">=", "&&", "||"};
+//
+
 bool Lexer::checkOperator(char c) const {
   return std::any_of(operators.cbegin(), operators.cend(), [=](int x) {
     if (x == c)
@@ -13,12 +19,23 @@ bool Lexer::checkOperator(char c) const {
 Lexer::Lexer(const std::string &code) : code_(code) {
   p = 0;
   c = code_[p];
-  init();
+}
+
+char Lexer::read() {
+  if (p < code_.length())
+    return code_[p];
+  return eof;
+}
+char Lexer::consume() {
+  if (p < code_.length())
+    return code_[p++];
+  return eof;
 }
 
 bool Lexer::skipWhitespace() {
-  if (code_[p] == ' ') {
-    p++;
+  char c = read();
+  if (c == ' ') {
+    consume();
     return true;
   }
   return false;
@@ -26,11 +43,9 @@ bool Lexer::skipWhitespace() {
 
 Token Lexer::readNum() {
   std::string str;
-  while (isdigit(code_[p])) {
-    str += code_[p++];
-  }
-  Token token(str, Integer);
-  return token;
+  while (isdigit(code_[p]))
+    str += consume();
+  return Token(str, Integer);
 }
 
 Token Lexer::readOperator() {
@@ -45,38 +60,34 @@ Token Lexer::readOperator() {
       p += 2;
     } else {
       // single length
-      str = code_[p++];
+      str = consume();
     }
   } else {
-    str = code_[p++];
+    str = consume();
   }
-  Token token(str);
-  return token;
+  return Token(str);
 }
 
 Token Lexer::readIdentifier() {
   std::string str;
-  while (code_[p] != ' ' && !checkOperator(code_[p])) {
-    str += code_[p++];
+  while (read() != ' ' && !checkOperator(read())) {
+    str += consume();
   }
-  Token token(str);
-  return token;
+  return Token(str);
 }
 
-void Lexer::init() {}
-
 Token Lexer::nextToken() {
-  if (p < code_.length()) {
-    if (skipWhitespace())
-      return nextToken();
-    if (isdigit(code_[p]))
-      return readNum();
-    else if (checkOperator(code_[p]))
-      return readOperator();
-    else
-      return readIdentifier();
-  }
-  return Token::getCodeEndToken();
+  char c = read();
+  if (c == eof)
+    return Token::getCodeEndToken();
+  if (skipWhitespace())
+    return nextToken();
+  if (isdigit(c))
+    return readNum();
+  else if (checkOperator(c))
+    return readOperator();
+  else
+    return readIdentifier();
 }
 
 bool Lexer::skip(TokenKind tokenKind) {
