@@ -1,21 +1,6 @@
 #include "lexer.h"
 #include <iostream>
 
-//  const std::vector<char> operators{'+', '-', '*', '/', '(', ')', '=',
-//                                    '&', '|', ';', '!', '%', '<', '>'};
-//  const std::vector<std::string> twoLenthOperators{
-//      "==", "!=", "<=", ">=", "&&", "||"};
-//
-
-bool Lexer::checkOperator(char c) const {
-  return std::any_of(operators.cbegin(), operators.cend(), [=](int x) {
-    if (x == c)
-      return true;
-    else
-      return false;
-  });
-}
-
 Lexer::Lexer(const std::string &code) : code_(code) {
   p = 0;
   c = code_[p];
@@ -26,6 +11,7 @@ char Lexer::read() {
     return code_[p];
   return eof;
 }
+
 char Lexer::consume() {
   if (p < code_.length())
     return code_[p++];
@@ -49,30 +35,25 @@ Token Lexer::readNum() {
 }
 
 Token Lexer::readOperator() {
-  std::string str;
-  if (p + 1 < code_.length()) {
-    std::string subcode = code_.substr(p, 2);
-    auto itr = std::find(twoLenthOperators.cbegin(), twoLenthOperators.cend(),
-                         subcode);
-    if (itr != twoLenthOperators.cend()) {
-      // two length
-      str = subcode;
-      p += 2;
-    } else {
-      // single length
-      str = consume();
+  char c = consume();
+  char cn = read();
+  if (cn != eof) {
+    std::string op;
+    op += c;
+    op += cn;
+    if (op == "==" || op == "!=" || op == "<=" || op == ">=" || op == "&&" ||
+        op == "||") {
+      consume();
+      return Token(op);
     }
-  } else {
-    str = consume();
   }
-  return Token(str);
+  return Token(std::string(1, c));
 }
 
 Token Lexer::readIdentifier() {
   std::string str;
-  while (read() != ' ' && !checkOperator(read())) {
+  while (isalpha(read()) || read() == '_')
     str += consume();
-  }
   return Token(str);
 }
 
@@ -84,10 +65,10 @@ Token Lexer::nextToken() {
     return nextToken();
   if (isdigit(c))
     return readNum();
-  else if (checkOperator(c))
-    return readOperator();
-  else
+  else if (isalpha(c))
     return readIdentifier();
+  else
+    return readOperator();
 }
 
 bool Lexer::skip(TokenKind tokenKind) {

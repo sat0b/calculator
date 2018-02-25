@@ -10,13 +10,8 @@ private:
   char c;
   const char eof = -1;
   std::vector<Token> tokens;
-  const std::vector<char> operators{'+', '-', '*', '/', '(', ')', '=',
-                                    '&', '|', ';', '!', '%', '<', '>'};
-  const std::vector<std::string> twoLenthOperators{
-      "==", "!=", "<=", ">=", "&&", "||"};
   char read();
   char consume();
-  bool checkOperator(char c) const;
   bool skipWhitespace();
   Token readNum();
   Token readOperator();
