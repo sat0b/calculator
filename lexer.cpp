@@ -10,25 +10,31 @@ bool Lexer::checkOperator(char c) const {
   });
 }
 
-void Lexer::init(const std::string &code) {
+Lexer::Lexer(const std::string &code) : code_(code) {
+  int p = 0;
+  c = code_[p];
+  init();
+}
+
+void Lexer::init() {
   tokens.clear();
   int i = 0;
-  while (i < code.length()) {
-    if (code[i] == ' ') {
+  while (i < code_.length()) {
+    if (code_[i] == ' ') {
       i++;
       continue;
     }
     std::string str;
     // digit
-    if (isdigit(code[i])) {
-      while (isdigit(code[i])) {
-        str += code[i++];
+    if (isdigit(code_[i])) {
+      while (isdigit(code_[i])) {
+        str += code_[i++];
       }
     }
     // operator
-    else if (checkOperator(code[i])) {
-      if (i + 1 < code.length()) {
-        std::string subcode = code.substr(i, 2);
+    else if (checkOperator(code_[i])) {
+      if (i + 1 < code_.length()) {
+        std::string subcode = code_.substr(i, 2);
         auto itr = std::find(twoLenthOperators.cbegin(),
                              twoLenthOperators.cend(), subcode);
         if (itr != twoLenthOperators.cend()) {
@@ -37,16 +43,16 @@ void Lexer::init(const std::string &code) {
           i += 2;
         } else {
           // single length
-          str = code[i++];
+          str = code_[i++];
         }
       } else {
-        str = code[i++];
+        str = code_[i++];
       }
     }
     // variable
     else {
-      while (code[i] != ' ' && !checkOperator(code[i])) {
-        str += code[i++];
+      while (code_[i] != ' ' && !checkOperator(code_[i])) {
+        str += code_[i++];
       }
     }
     Token token(str);

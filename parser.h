@@ -24,7 +24,7 @@ public:
 
 class Parser {
 private:
-  Lexer lexer;
+  Lexer *lexer;
   Token token;
   Stack stack;
   std::map<std::string, int> variables;
@@ -54,5 +54,7 @@ private:
   void skipUntil(TokenKind kind);
 
 public:
+  Parser(Lexer *lexer);
   void run(const std::string &line, bool replMode);
+  void run();
 };

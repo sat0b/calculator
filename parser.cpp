@@ -41,7 +41,9 @@ void Error::reset() { err = false; }
 
 bool Error::state() { return err; }
 
-void Parser::next() { token = lexer.nextToken(); }
+Parser::Parser(Lexer *lexer) : lexer(lexer) {}
+
+void Parser::next() { token = lexer->nextToken(); }
 
 void Parser::checkKind(const TokenKind kind) {
   if (token.getKind() != kind)
@@ -124,7 +126,7 @@ void Parser::block() {
 void Parser::forStatement() {}
 
 void Parser::ifStatement() {
-  if (lexer.skip(LeftBracket))
+  if (lexer->skip(LeftBracket))
     return;
   next();
   orExpression();
@@ -143,7 +145,7 @@ void Parser::ifStatement() {
     return;
   }
 
-  if (lexer.skip(StatementEnd))
+  if (lexer->skip(StatementEnd))
     return;
 
   if (val) {
@@ -336,24 +338,22 @@ void Parser::showVariableTable() const {
   }
 }
 
-void Parser::run(const std::string &line, bool replMode) {
-  lexer.init(line);
+void Parser::run() {
   error.reset();
   stack.clear();
-  // lexer.showTokens();
+  // lexer->showTokens();
   this->replMode = replMode;
 
   while (true) {
     next();
+    if (token.getKind() == CodeEnd)
+      break;
     statement();
     if (error.state()) {
       error.printErrorMessage();
       return;
     }
-    if (token.getKind() == StatementEnd) {
-      return;
-    } else {
-      error.setSyntaxError("line is not terminated by ;");
+    if (token.getKind() != StatementEnd) {
       error.printErrorMessage();
       return;
     }
