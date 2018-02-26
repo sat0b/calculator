@@ -2,8 +2,18 @@
 #include <iostream>
 
 Lexer::Lexer(const std::string &code) : code_(code) {
+  // Lexical analysis
   p = 0;
   c = code_[p];
+  for (;;) {
+    Token token = lex();
+    tokens.push_back(token);
+    if (token.getKind() == CodeEnd)
+      break;
+  }
+
+  // Initalize token position tkp
+  tkp = 0;
 }
 
 char Lexer::read() {
@@ -57,12 +67,12 @@ Token Lexer::readIdentifier() {
   return Token(str);
 }
 
-Token Lexer::nextToken() {
+Token Lexer::lex() {
   char c = read();
   if (c == eof)
     return Token::getCodeEndToken();
   if (skipWhitespace())
-    return nextToken();
+    return lex();
   if (isdigit(c))
     return readNum();
   else if (isalpha(c))
@@ -70,6 +80,8 @@ Token Lexer::nextToken() {
   else
     return readOperator();
 }
+
+Token Lexer::nextToken() { return tokens[tkp++]; }
 
 bool Lexer::skip(TokenKind tokenKind) {
   Token token = nextToken();

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "lexer.h"
 #include "stack.h"
 #include "token.h"
@@ -52,6 +51,8 @@ private:
   void elseifStatement();
   void elseStatement();
   void skipUntil(TokenKind kind);
+  Token consume();
+  bool skip(TokenKind kind);
 
 public:
   Parser(Lexer *lexer);
