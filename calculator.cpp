@@ -11,29 +11,29 @@
 #include <vector>
 
 void run(const std::string &file_name) {
-  std::ifstream ifs(file_name);
-  if (!ifs) {
-    std::cerr << "Cannot open " << file_name << std::endl;
-    return;
-  }
-  std::string line;
-  std::string code;
-  while (getline(ifs, line)) {
-    const int n = line.length() - 1;
-    if (line[n] != '\n' && line[n] != ';')
-      line += ";";
-    code += line;
-  }
-  Lexer *lexer = new Lexer(code);
-  Parser parser(lexer);
-  parser.run();
+    std::ifstream ifs(file_name);
+    if (!ifs) {
+        std::cerr << "Cannot open " << file_name << std::endl;
+        return;
+    }
+    std::string line;
+    std::string code;
+    while (getline(ifs, line)) {
+        const int n = line.length() - 1;
+        if (line[n] != '\n' && line[n] != ';')
+            line += ";";
+        code += line;
+    }
+    Lexer *lexer = new Lexer(code);
+    Parser parser(lexer);
+    parser.run();
 }
 
 int main(int argc, char **argv) {
-  if (argc == 1) {
-    // repl();
-  } else if (argc == 2) {
-    const std::string file_name = std::string(argv[1]);
-    run(fileName);
-  }
+    if (argc == 1) {
+        // repl();
+    } else if (argc == 2) {
+        const std::string file_name = std::string(argv[1]);
+        run(file_name);
+    }
 }
