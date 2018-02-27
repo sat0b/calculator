@@ -43,22 +43,22 @@ enum TokenKind {
   CodeEnd,
 };
 
-std::string getTokenString(TokenKind kind);
+std::string get_token_string(TokenKind kind);
 
 class Token {
 private:
   TokenKind kind;
   std::string token;
-  TokenKind getTokenKind(const std::string &token) const;
+  TokenKind get_token_kind(const std::string &token) const;
 
 public:
   Token(){};
   Token(std::string str);
-  Token(std::string str, TokenKind tokenKind);
+  Token(std::string str, TokenKind token_kind);
   Token(TokenKind kind);
-  TokenKind getKind() const;
-  int getValue() const;
-  std::string getName() const;
-  std::string toString();
-  static Token getCodeEndToken();
+  TokenKind get_kind() const;
+  int get_value() const;
+  std::string get_name() const;
+  std::string to_string();
+  static Token get_code_end_token();
 };

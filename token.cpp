@@ -1,7 +1,7 @@
 #include "token.h"
 #include <iostream>
 
-TokenKind Token::getTokenKind(const std::string &token) const {
+TokenKind Token::get_token_kind(const std::string &token) const {
   if (all_of(token.cbegin(), token.cend(), isdigit))
     return Integer;
   if (token == "+")
@@ -65,7 +65,7 @@ Token::Token(std::string str, TokenKind tokenKind)
     : token(str), kind(tokenKind) {}
 
 Token::Token(std::string str) {
-  this->kind = getTokenKind(str);
+  this->kind = get_token_kind(str);
   this->token = str;
 }
 
@@ -74,9 +74,9 @@ Token::Token(TokenKind kind) {
   this->token = "";
 }
 
-TokenKind Token::getKind() const { return kind; }
+TokenKind Token::get_kind() const { return kind; }
 
-int Token::getValue() const {
+int Token::get_value() const {
   if (std::all_of(token.cbegin(), token.cend(), isdigit)) {
     // TODO: integer range check
     return std::stoi(token);
@@ -84,9 +84,9 @@ int Token::getValue() const {
   return 0;
 }
 
-std::string Token::getName() const { return this->token; }
+std::string Token::get_name() const { return this->token; }
 
-Token Token::getCodeEndToken() {
+Token Token::get_code_end_token() {
   Token token(CodeEnd);
   return token;
 }

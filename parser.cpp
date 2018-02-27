@@ -3,38 +3,38 @@
 #include "token.h"
 #include <iostream>
 
-void Error::printErrorMessage() {
-  switch (errType) {
+void Error::print_error_message() {
+  switch (err_type) {
   case ErrorType::SyntaxError:
     std::cerr << "Syntax Error" << std::endl;
     break;
   case ErrorType::NameError:
-    std::cerr << "Name Error, no such a variable " << errMessage << std::endl;
+    std::cerr << "Name Error, no such a variable " << err_message << std::endl;
     break;
   case ErrorType::SymbolError:
-    std::cerr << "Symbol Error" << errMessage << std::endl;
+    std::cerr << "Symbol Error" << err_message << std::endl;
   default:
     std::cerr << "Error" << std::endl;
     break;
   }
 }
 
-void Error::setSyntaxError(std::string msg) {
+void Error::set_syntax_error(std::string msg) {
   err = true;
-  errType = ErrorType::SyntaxError;
-  errMessage = msg;
+  err_type = ErrorType::SyntaxError;
+  err_message = msg;
 }
 
-void Error::setNameError(std::string msg) {
+void Error::set_name_error(std::string msg) {
   err = true;
-  errType = ErrorType::NameError;
-  errMessage = msg;
+  err_type = ErrorType::NameError;
+  err_message = msg;
 }
 
-void Error::setSymbolError(std::string msg) {
+void Error::set_symbol_error(std::string msg) {
   err = true;
-  errType = ErrorType::SymbolError;
-  errMessage = msg;
+  err_type = ErrorType::SymbolError;
+  err_message = msg;
 }
 
 void Error::reset() { err = false; }
@@ -43,96 +43,96 @@ bool Error::state() { return err; }
 
 Parser::Parser(Lexer *lexer) : lexer(lexer) {}
 
-void Parser::next() { token = lexer->nextToken(); }
+void Parser::next() { token = lexer->next_token(); }
 
-void Parser::checkKind(const TokenKind kind) {
-  if (token.getKind() != kind)
-    error.setSyntaxError("");
+void Parser::check_kind(const TokenKind kind) {
+  if (token.get_kind() != kind)
+    error.set_syntax_error("");
 }
 
-void Parser::variableStatement() {
-  std::string name = token.getName();
+void Parser::variable_statement() {
+  std::string name = token.get_name();
   next();
-  if (token.getKind() == Assign) {
+  if (token.get_kind() == Assign) {
     next();
-    orExpression();
+    or_expression();
     if (error.state())
       return;
-    checkKind(StatementEnd);
+    check_kind(StatementEnd);
     if (error.state())
       return;
     if (stack.exist())
       variables[name] = stack.pop();
     else
-      error.setSyntaxError("");
-  } else if (token.getKind() == StatementEnd) {
-    if (replMode) {
+      error.set_syntax_error("");
+  } else if (token.get_kind() == StatementEnd) {
+    if (repl_mode) {
       if (variables.count(name) > 0) {
         std::cout << variables[name] << std::endl;
       } else {
-        error.setNameError(name);
+        error.set_name_error(name);
       }
     } else {
-      error.setSyntaxError("");
+      error.set_syntax_error("");
     }
   } else {
-    error.setSyntaxError("");
+    error.set_syntax_error("");
   }
 }
 
-void Parser::printStatement() {
+void Parser::print_statement() {
   next();
-  if (token.getKind() != Variable && token.getKind() != Integer) {
-    error.setSyntaxError("");
+  if (token.get_kind() != Variable && token.get_kind() != Integer) {
+    error.set_syntax_error("");
     return;
   }
-  orExpression();
+  or_expression();
   if (error.state())
     return;
-  checkKind(StatementEnd);
+  check_kind(StatementEnd);
   if (error.state())
     return;
   if (stack.exist())
     std::cout << stack.pop() << std::endl;
   else
-    error.setSyntaxError("");
+    error.set_syntax_error("");
 }
 
-void Parser::numericStatement() {
-  orExpression();
+void Parser::numeric_statement() {
+  or_expression();
   if (error.state())
     return;
-  checkKind(StatementEnd);
+  check_kind(StatementEnd);
   if (error.state())
     return;
   if (stack.exist())
     std::cout << stack.pop() << std::endl;
   else
-    error.setSyntaxError("");
+    error.set_syntax_error("");
 }
 
 void Parser::block() {
   next();
   if (error.state())
     return;
-  while (token.getKind() != ElseIf && token.getKind() != Else &&
-         token.getKind() != End && token.getKind() != Break &&
-         token.getKind() != Return) {
+  while (token.get_kind() != ElseIf && token.get_kind() != Else &&
+         token.get_kind() != End && token.get_kind() != Break &&
+         token.get_kind() != Return) {
     statement();
     next();
   }
 }
 
-void Parser::forStatement() {}
+void Parser::for_statement() {}
 
-void Parser::ifStatement() {
-  if (lexer->skip(LeftBracket))
+void Parser::if_statement() {
+  if (!lexer->skip(LeftBracket))
     return;
   next();
-  orExpression();
+  or_expression();
   if (error.state())
     return;
-  checkKind(RightBracket);
+  check_kind(RightBracket);
   if (error.state())
     return;
 
@@ -141,11 +141,11 @@ void Parser::ifStatement() {
   if (stack.exist()) {
     val = stack.pop();
   } else {
-    error.setSyntaxError("");
+    error.set_syntax_error("");
     return;
   }
 
-  if (lexer->skip(StatementEnd))
+  if (!lexer->skip(StatementEnd))
     return;
 
   if (val) {
@@ -153,70 +153,70 @@ void Parser::ifStatement() {
     next();
   } else {
     // jump statement
-    skipUntil(ElseIf);
-    skipUntil(Else);
+    skip_until(ElseIf);
+    skip_until(Else);
   }
 }
 
-void Parser::elseifStatement() {}
+void Parser::else_if_statement() {}
 
-void Parser::elseStatement() {}
+void Parser::else_statement() {}
 
-void Parser::skipUntil(TokenKind kind) {}
+void Parser::skip_until(TokenKind kind) {}
 
 void Parser::statement() {
   if (error.state())
     return;
-  if (token.getKind() == Variable)
-    variableStatement();
-  else if (token.getKind() == Print)
-    printStatement();
-  else if (token.getKind() == Integer)
-    numericStatement();
-  else if (token.getKind() == If || token.getKind() == ElseIf ||
-           token.getKind() == Else)
-    ifStatement();
-  else if (token.getKind() == For)
-    forStatement();
+  if (token.get_kind() == Variable)
+    variable_statement();
+  else if (token.get_kind() == Print)
+    print_statement();
+  else if (token.get_kind() == Integer)
+    numeric_statement();
+  else if (token.get_kind() == If || token.get_kind() == ElseIf ||
+           token.get_kind() == Else)
+    if_statement();
+  else if (token.get_kind() == For)
+    for_statement();
   else
-    error.setSyntaxError("");
+    error.set_syntax_error("");
 }
 
-void Parser::orExpression() {
-  andExpression();
-  while (token.getKind() == Or) {
-    TokenKind op = token.getKind();
+void Parser::or_expression() {
+  and_expression();
+  while (token.get_kind() == Or) {
+    TokenKind op = token.get_kind();
     next();
-    andExpression();
+    and_expression();
     operate(op);
   }
 }
 
-void Parser::andExpression() {
-  equalExpression();
-  while (token.getKind() == And) {
-    TokenKind op = token.getKind();
+void Parser::and_expression() {
+  equal_expression();
+  while (token.get_kind() == And) {
+    TokenKind op = token.get_kind();
     next();
-    equalExpression();
+    equal_expression();
     operate(op);
   }
 }
 
-void Parser::equalExpression() {
-  thanExpression();
-  while (token.getKind() == Equal || token.getKind() == NotEqual) {
-    TokenKind op = token.getKind();
+void Parser::equal_expression() {
+  than_expression();
+  while (token.get_kind() == Equal || token.get_kind() == NotEqual) {
+    TokenKind op = token.get_kind();
     next();
-    thanExpression();
+    than_expression();
     operate(op);
   }
 }
 
-void Parser::thanExpression() {
+void Parser::than_expression() {
   expression();
-  while (token.getKind() == LessThan || token.getKind() == LessEqual ||
-         token.getKind() == GreaterThan || token.getKind() == GreaterEqual) {
-    TokenKind op = token.getKind();
+  while (token.get_kind() == LessThan || token.get_kind() == LessEqual ||
+         token.get_kind() == GreaterThan || token.get_kind() == GreaterEqual) {
+    TokenKind op = token.get_kind();
     next();
     expression();
     operate(op);
@@ -225,8 +225,8 @@ void Parser::thanExpression() {
 
 void Parser::expression() {
   term();
-  while (token.getKind() == Plus || token.getKind() == Minus) {
-    TokenKind op = token.getKind();
+  while (token.get_kind() == Plus || token.get_kind() == Minus) {
+    TokenKind op = token.get_kind();
     next();
     term();
     operate(op);
@@ -235,9 +235,9 @@ void Parser::expression() {
 
 void Parser::term() {
   factor();
-  while (token.getKind() == Product || token.getKind() == Divide ||
-         token.getKind() == Mod) {
-    TokenKind op = token.getKind();
+  while (token.get_kind() == Product || token.get_kind() == Divide ||
+         token.get_kind() == Mod) {
+    TokenKind op = token.get_kind();
     next();
     factor();
     operate(op);
@@ -245,22 +245,22 @@ void Parser::term() {
 }
 
 void Parser::factor() {
-  switch (token.getKind()) {
+  switch (token.get_kind()) {
   case Integer:
-    stack.push(token.getValue());
+    stack.push(token.get_value());
     break;
   case Variable:
-    if (variables.count(token.getName()) > 0) {
-      stack.push(variables[token.getName()]);
+    if (variables.count(token.get_name()) > 0) {
+      stack.push(variables[token.get_name()]);
     } else {
-      error.setNameError(token.getName());
+      error.set_name_error(token.get_name());
       return;
     }
     break;
   case LeftBracket:
     next();
     expression();
-    checkKind(RightBracket);
+    check_kind(RightBracket);
     if (error.state())
       return;
     break;
@@ -275,13 +275,13 @@ void Parser::operate(const TokenKind op) {
   if (stack.exist()) {
     d2 = stack.pop();
   } else {
-    error.setSyntaxError("");
+    error.set_syntax_error("");
     return;
   }
   if (stack.exist()) {
     d1 = stack.pop();
   } else {
-    error.setSyntaxError("");
+    error.set_syntax_error("");
     return;
   }
 
@@ -326,14 +326,13 @@ void Parser::operate(const TokenKind op) {
     stack.push(d1 % d2);
     break;
   default:
-    // std::string msg = "Not Defined operator : " + getTokenString(op);
     std::string msg = "Not Defined operator";
-    error.setSymbolError(msg);
+    error.set_symbol_error(msg);
     break;
   }
 }
 
-void Parser::showVariableTable() const {
+void Parser::show_variable_table() const {
   for (auto v : variables) {
     std::cout << v.first << " : " << v.second << std::endl;
   }
@@ -342,20 +341,21 @@ void Parser::showVariableTable() const {
 void Parser::run() {
   error.reset();
   stack.clear();
-  // lexer->showTokens();
-  // this->replMode = replMode;
+  // lexer->show_tokens();
+  // this->repl_mode = repl_mode;
 
   while (true) {
+    // if (lexer->skip(CodeEnd))
     next();
-    if (token.getKind() == CodeEnd)
+    if (token.get_kind() == CodeEnd)
       break;
     statement();
     if (error.state()) {
-      error.printErrorMessage();
+      error.print_error_message();
       return;
     }
-    if (token.getKind() != StatementEnd) {
-      error.printErrorMessage();
+    if (token.get_kind() != StatementEnd) {
+      error.print_error_message();
       return;
     }
   }

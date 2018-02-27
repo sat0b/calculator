@@ -8,7 +8,7 @@ Lexer::Lexer(const std::string &code) : code_(code) {
   for (;;) {
     Token token = lex();
     tokens.push_back(token);
-    if (token.getKind() == CodeEnd)
+    if (token.get_kind() == CodeEnd)
       break;
   }
 
@@ -28,7 +28,7 @@ char Lexer::consume() {
   return eof;
 }
 
-bool Lexer::skipWhitespace() {
+bool Lexer::skip_whitespace() {
   char c = read();
   if (c == ' ') {
     consume();
@@ -37,14 +37,14 @@ bool Lexer::skipWhitespace() {
   return false;
 }
 
-Token Lexer::readNum() {
+Token Lexer::read_num() {
   std::string str;
   while (isdigit(code_[p]))
     str += consume();
   return Token(str, Integer);
 }
 
-Token Lexer::readOperator() {
+Token Lexer::read_operator() {
   char c = consume();
   char cn = read();
   if (cn != eof) {
@@ -60,7 +60,7 @@ Token Lexer::readOperator() {
   return Token(std::string(1, c));
 }
 
-Token Lexer::readIdentifier() {
+Token Lexer::read_identifier() {
   std::string str;
   while (isalpha(read()) || read() == '_')
     str += consume();
@@ -70,22 +70,25 @@ Token Lexer::readIdentifier() {
 Token Lexer::lex() {
   char c = read();
   if (c == eof)
-    return Token::getCodeEndToken();
-  if (skipWhitespace())
+    return Token::get_code_end_token();
+  if (skip_whitespace())
     return lex();
   if (isdigit(c))
-    return readNum();
+    return read_num();
   else if (isalpha(c))
-    return readIdentifier();
+    return read_identifier();
   else
-    return readOperator();
+    return read_operator();
 }
 
-Token Lexer::nextToken() { return tokens[tkp++]; }
+Token Lexer::next_token() { return tokens[tkp++]; }
 
-bool Lexer::skip(TokenKind tokenKind) {
-  Token token = nextToken();
-  if (token.getKind() == tokenKind)
+Token Lexer::read_token() { return tokens[tkp]; }
+
+bool Lexer::skip(TokenKind token_kind) {
+  Token token = read_token();
+  if (token.get_kind() != token_kind)
     return false;
+  tkp++;
   return true;
 }

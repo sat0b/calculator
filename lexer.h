@@ -13,17 +13,18 @@ private:
   std::vector<Token> tokens;
   char read();
   char consume();
-  bool skipWhitespace();
-  Token readNum();
-  Token readOperator();
-  Token readIdentifier();
-  Token readKeyword();
-  Token readEnd();
+  bool skip_whitespace();
+  Token read_num();
+  Token read_operator();
+  Token read_identifier();
+  Token read_keyword();
+  Token read_end();
   Token lex();
 
 public:
-  Lexer(const std::string &code);
-  Token nextToken();
-  void showTokens() const;
-  bool skip(TokenKind tokenKind);
+  Lexer(const std::string &);
+  Token next_token();
+  Token read_token();
+  void show_tokens() const;
+  bool skip(TokenKind);
 };

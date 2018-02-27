@@ -10,10 +10,10 @@
 #include <sstream>
 #include <vector>
 
-void run(const std::string &fileName) {
-  std::ifstream ifs(fileName);
+void run(const std::string &file_name) {
+  std::ifstream ifs(file_name);
   if (!ifs) {
-    std::cerr << "Cannot open " << fileName << std::endl;
+    std::cerr << "Cannot open " << file_name << std::endl;
     return;
   }
   std::string line;
@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
   if (argc == 1) {
     // repl();
   } else if (argc == 2) {
-    const std::string fileName = std::string(argv[1]);
+    const std::string file_name = std::string(argv[1]);
     run(fileName);
   }
 }
