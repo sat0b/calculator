@@ -92,3 +92,12 @@ bool Lexer::skip(TokenKind token_kind) {
     tkp++;
     return true;
 }
+
+void Lexer::skip() { tkp++; }
+
+bool Lexer::match(TokenKind token_kind) {
+    Token token = read_token();
+    if (token.get_kind() == token_kind)
+        return true;
+    return false;
+}

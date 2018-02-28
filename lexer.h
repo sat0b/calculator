@@ -22,9 +22,11 @@ class Lexer {
     Token lex();
 
   public:
-    Lexer(const std::string &);
+    Lexer(const std::string &code);
     Token next_token();
     Token read_token();
     void show_tokens() const;
-    bool skip(TokenKind);
+    bool skip(TokenKind token_kind);
+    void skip();
+    bool match(TokenKind token_kind);
 };

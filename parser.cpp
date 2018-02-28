@@ -52,58 +52,30 @@ void Parser::check_kind(const TokenKind kind) {
 }
 
 void Parser::variable_statement() {
+    Token token = lexer->next_token();
     std::string name = token.get_name();
-    next();
-    if (token.get_kind() == Assign) {
-        next();
+    if (lexer->skip(Assign)) {
         or_expression();
-        if (error.state())
-            return;
-        check_kind(StatementEnd);
-        if (error.state())
-            return;
         if (stack.exist())
             variables[name] = stack.pop();
         else
             error.set_syntax_error("");
-    } else if (token.get_kind() == StatementEnd) {
-        if (repl_mode) {
-            if (variables.count(name) > 0) {
-                std::cout << variables[name] << std::endl;
-            } else {
-                error.set_name_error(name);
-            }
-        } else {
-            error.set_syntax_error("");
-        }
-    } else {
-        error.set_syntax_error("");
     }
 }
 
 void Parser::print_statement() {
-    next();
-    if (token.get_kind() != Variable && token.get_kind() != Integer) {
-        error.set_syntax_error("");
-        return;
+    if (lexer->match(Variable) || lexer->match(Integer)) {
+        or_expression();
+        if (stack.exist())
+            std::cout << stack.pop() << std::endl;
     }
-    or_expression();
-    if (error.state())
-        return;
-    check_kind(StatementEnd);
-    if (error.state())
-        return;
-    if (stack.exist())
-        std::cout << stack.pop() << std::endl;
-    else
-        error.set_syntax_error("");
 }
 
 void Parser::numeric_statement() {
     or_expression();
     if (error.state())
         return;
-    check_kind(StatementEnd);
+    lexer->match(StatementEnd);
     if (error.state())
         return;
     if (stack.exist())
@@ -113,31 +85,22 @@ void Parser::numeric_statement() {
 }
 
 void Parser::block() {
-    next();
-    if (error.state())
-        return;
-    while (token.get_kind() != ElseIf && token.get_kind() != Else &&
-           token.get_kind() != End && token.get_kind() != Break &&
-           token.get_kind() != Return) {
+    for (;;) {
+        if (lexer->skip(ElseIf) || lexer->skip(Else) || lexer->skip(End) ||
+            lexer->skip(Break) || lexer->skip(Return))
+            return;
         statement();
-        next();
+        lexer->skip(StatementEnd);
     }
 }
 
 void Parser::for_statement() {}
 
 void Parser::if_statement() {
-    if (!lexer->skip(LeftBracket))
-        return;
-    next();
+    lexer->skip(LeftBracket);
     or_expression();
-    if (error.state())
-        return;
-    check_kind(RightBracket);
-    if (error.state())
-        return;
+    lexer->skip(RightBracket);
 
-    // check truth
     int val = 0;
     if (stack.exist()) {
         val = stack.pop();
@@ -145,13 +108,10 @@ void Parser::if_statement() {
         error.set_syntax_error("");
         return;
     }
-
-    if (!lexer->skip(StatementEnd))
-        return;
+    lexer->skip(StatementEnd);
 
     if (val) {
         block();
-        next();
     } else {
         // jump statement
         skip_until(ElseIf);
@@ -168,16 +128,15 @@ void Parser::skip_until(TokenKind kind) {}
 void Parser::statement() {
     if (error.state())
         return;
-    if (token.get_kind() == Variable)
+    if (lexer->match(Variable))
         variable_statement();
-    else if (token.get_kind() == Print)
+    else if (lexer->skip(Print))
         print_statement();
-    else if (token.get_kind() == Integer)
+    else if (lexer->skip(Integer))
         numeric_statement();
-    else if (token.get_kind() == If || token.get_kind() == ElseIf ||
-             token.get_kind() == Else)
+    else if (lexer->skip(If))
         if_statement();
-    else if (token.get_kind() == For)
+    else if (lexer->skip(For))
         for_statement();
     else
         error.set_syntax_error("");
@@ -185,9 +144,8 @@ void Parser::statement() {
 
 void Parser::or_expression() {
     and_expression();
-    while (token.get_kind() == Or) {
-        TokenKind op = token.get_kind();
-        next();
+    while (lexer->match(Or)) {
+        TokenKind op = lexer->next_token().get_kind();
         and_expression();
         operate(op);
     }
@@ -195,9 +153,8 @@ void Parser::or_expression() {
 
 void Parser::and_expression() {
     equal_expression();
-    while (token.get_kind() == And) {
-        TokenKind op = token.get_kind();
-        next();
+    while (lexer->match(And)) {
+        TokenKind op = lexer->next_token().get_kind();
         equal_expression();
         operate(op);
     }
@@ -205,9 +162,8 @@ void Parser::and_expression() {
 
 void Parser::equal_expression() {
     than_expression();
-    while (token.get_kind() == Equal || token.get_kind() == NotEqual) {
-        TokenKind op = token.get_kind();
-        next();
+    while (lexer->match(Equal) || lexer->match(NotEqual)) {
+        TokenKind op = lexer->next_token().get_kind();
         than_expression();
         operate(op);
     }
@@ -215,11 +171,9 @@ void Parser::equal_expression() {
 
 void Parser::than_expression() {
     expression();
-    while (token.get_kind() == LessThan || token.get_kind() == LessEqual ||
-           token.get_kind() == GreaterThan ||
-           token.get_kind() == GreaterEqual) {
-        TokenKind op = token.get_kind();
-        next();
+    while (lexer->match(LessThan) || lexer->match(LessEqual) ||
+           lexer->match(GreaterThan) || lexer->match(GreaterEqual)) {
+        TokenKind op = lexer->next_token().get_kind();
         expression();
         operate(op);
     }
@@ -227,9 +181,8 @@ void Parser::than_expression() {
 
 void Parser::expression() {
     term();
-    while (token.get_kind() == Plus || token.get_kind() == Minus) {
-        TokenKind op = token.get_kind();
-        next();
+    while (lexer->match(Plus) || lexer->match(Minus)) {
+        TokenKind op = lexer->next_token().get_kind();
         term();
         operate(op);
     }
@@ -237,55 +190,42 @@ void Parser::expression() {
 
 void Parser::term() {
     factor();
-    while (token.get_kind() == Product || token.get_kind() == Divide ||
-           token.get_kind() == Mod) {
-        TokenKind op = token.get_kind();
-        next();
+    while (lexer->match(Product) || lexer->match(Divide) || lexer->match(Mod)) {
+        TokenKind op = lexer->next_token().get_kind();
         factor();
         operate(op);
     }
 }
 
 void Parser::factor() {
+    Token token = lexer->next_token();
     switch (token.get_kind()) {
     case Integer:
         stack.push(token.get_value());
         break;
     case Variable:
-        if (variables.count(token.get_name()) > 0) {
+        if (variables.count(token.get_name()) > 0)
             stack.push(variables[token.get_name()]);
-        } else {
+        else
             error.set_name_error(token.get_name());
-            return;
-        }
         break;
     case LeftBracket:
-        next();
         expression();
-        check_kind(RightBracket);
-        if (error.state())
-            return;
+        lexer->skip(RightBracket);
         break;
     default:
         break;
     }
-    next();
 }
 
 void Parser::operate(const TokenKind op) {
     int d1, d2;
-    if (stack.exist()) {
-        d2 = stack.pop();
-    } else {
-        error.set_syntax_error("");
+    if (!stack.exist())
         return;
-    }
-    if (stack.exist()) {
-        d1 = stack.pop();
-    } else {
-        error.set_syntax_error("");
+    d2 = stack.pop();
+    if (!stack.exist())
         return;
-    }
+    d1 = stack.pop();
 
     switch (op) {
     case Plus:
@@ -335,9 +275,8 @@ void Parser::operate(const TokenKind op) {
 }
 
 void Parser::show_variable_table() const {
-    for (auto v : variables) {
+    for (auto v : variables)
         std::cout << v.first << " : " << v.second << std::endl;
-    }
 }
 
 void Parser::run() {
@@ -346,19 +285,12 @@ void Parser::run() {
     // lexer->show_tokens();
     // this->repl_mode = repl_mode;
 
-    while (true) {
-        // if (lexer->skip(CodeEnd))
-        next();
-        if (token.get_kind() == CodeEnd)
-            break;
+    while (!lexer->match(CodeEnd)) {
         statement();
         if (error.state()) {
             error.print_error_message();
             return;
         }
-        if (token.get_kind() != StatementEnd) {
-            error.print_error_message();
-            return;
-        }
+        lexer->skip(StatementEnd);
     }
 }
