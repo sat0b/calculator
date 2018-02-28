@@ -3,6 +3,19 @@
 #include "token.h"
 #include <iostream>
 
+namespace {
+
+std::map<TokenKind, int> exp_order{
+    {Or, 1},       {And, 2},       {Equal, 3},       {NotEqual, 3},
+    {LessThan, 4}, {LessEqual, 4}, {GreaterThan, 4}, {GreaterEqual, 4},
+    {Plus, 5},     {Minus, 5},     {Product, 6},     {Divide, 6},
+    {Mod, 6},
+};
+
+const int order_max = 6;
+
+} // namespace
+
 void Error::print_error_message() {
     switch (err_type) {
     case ErrorType::SyntaxError:
@@ -44,18 +57,11 @@ bool Error::state() { return err; }
 
 Parser::Parser(Lexer *lexer) : lexer(lexer) {}
 
-void Parser::next() { token = lexer->next_token(); }
-
-void Parser::check_kind(const TokenKind kind) {
-    if (token.get_kind() != kind)
-        error.set_syntax_error("");
-}
-
 void Parser::variable_statement() {
     Token token = lexer->next_token();
     std::string name = token.get_name();
     if (lexer->skip(Assign)) {
-        or_expression();
+        expression(1);
         if (stack.exist())
             variables[name] = stack.pop();
         else
@@ -65,14 +71,14 @@ void Parser::variable_statement() {
 
 void Parser::print_statement() {
     if (lexer->match(Variable) || lexer->match(Integer)) {
-        or_expression();
+        expression(1);
         if (stack.exist())
             std::cout << stack.pop() << std::endl;
     }
 }
 
 void Parser::numeric_statement() {
-    or_expression();
+    expression(1);
     if (error.state())
         return;
     lexer->match(StatementEnd);
@@ -98,7 +104,7 @@ void Parser::for_statement() {}
 
 void Parser::if_statement() {
     lexer->skip(LeftBracket);
-    or_expression();
+    expression(1);
     lexer->skip(RightBracket);
 
     int val = 0;
@@ -114,16 +120,14 @@ void Parser::if_statement() {
         block();
     } else {
         // jump statement
-        skip_until(ElseIf);
-        skip_until(Else);
+        // skip_until(ElseIf);
+        // skip_until(Else);
     }
 }
 
 void Parser::else_if_statement() {}
 
 void Parser::else_statement() {}
-
-void Parser::skip_until(TokenKind kind) {}
 
 void Parser::statement() {
     if (error.state())
@@ -142,58 +146,22 @@ void Parser::statement() {
         error.set_syntax_error("");
 }
 
-void Parser::or_expression() {
-    and_expression();
-    while (lexer->match(Or)) {
-        TokenKind op = lexer->next_token().get_kind();
-        and_expression();
-        operate(op);
-    }
-}
+void Parser::expression(int priority) {
+    if (priority > order_max)
+        return factor();
 
-void Parser::and_expression() {
-    equal_expression();
-    while (lexer->match(And)) {
+    expression(priority + 1);
+    for (;;) {
+        TokenKind tk = lexer->read_token().get_kind();
+        if (priority != exp_order[tk])
+            return;
         TokenKind op = lexer->next_token().get_kind();
-        equal_expression();
-        operate(op);
-    }
-}
-
-void Parser::equal_expression() {
-    than_expression();
-    while (lexer->match(Equal) || lexer->match(NotEqual)) {
-        TokenKind op = lexer->next_token().get_kind();
-        than_expression();
-        operate(op);
-    }
-}
-
-void Parser::than_expression() {
-    expression();
-    while (lexer->match(LessThan) || lexer->match(LessEqual) ||
-           lexer->match(GreaterThan) || lexer->match(GreaterEqual)) {
-        TokenKind op = lexer->next_token().get_kind();
-        expression();
-        operate(op);
-    }
-}
-
-void Parser::expression() {
-    term();
-    while (lexer->match(Plus) || lexer->match(Minus)) {
-        TokenKind op = lexer->next_token().get_kind();
-        term();
-        operate(op);
-    }
-}
-
-void Parser::term() {
-    factor();
-    while (lexer->match(Product) || lexer->match(Divide) || lexer->match(Mod)) {
-        TokenKind op = lexer->next_token().get_kind();
-        factor();
-        operate(op);
+        expression(priority + 1);
+        bool success = stack.operate(op);
+        if (!success) {
+            error.set_syntax_error("");
+            return;
+        }
     }
 }
 
@@ -210,66 +178,10 @@ void Parser::factor() {
             error.set_name_error(token.get_name());
         break;
     case LeftBracket:
-        expression();
+        expression(1);
         lexer->skip(RightBracket);
         break;
     default:
-        break;
-    }
-}
-
-void Parser::operate(const TokenKind op) {
-    int d1, d2;
-    if (!stack.exist())
-        return;
-    d2 = stack.pop();
-    if (!stack.exist())
-        return;
-    d1 = stack.pop();
-
-    switch (op) {
-    case Plus:
-        stack.push(d1 + d2);
-        break;
-    case Minus:
-        stack.push(d1 - d2);
-        break;
-    case Product:
-        stack.push(d1 * d2);
-        break;
-    case Divide:
-        stack.push(d1 / d2);
-        break;
-    case And:
-        stack.push(d1 && d2);
-        break;
-    case Or:
-        stack.push(d1 || d2);
-        break;
-    case Equal:
-        stack.push(d1 == d2);
-        break;
-    case NotEqual:
-        stack.push(d1 != d2);
-        break;
-    case LessThan:
-        stack.push(d1 < d2);
-        break;
-    case LessEqual:
-        stack.push(d1 <= d2);
-        break;
-    case GreaterThan:
-        stack.push(d1 > d2);
-        break;
-    case GreaterEqual:
-        stack.push(d1 >= d2);
-        break;
-    case Mod:
-        stack.push(d1 % d2);
-        break;
-    default:
-        std::string msg = "Not Defined operator";
-        error.set_symbol_error(msg);
         break;
     }
 }
@@ -283,9 +195,10 @@ void Parser::run() {
     error.reset();
     stack.clear();
     // lexer->show_tokens();
-    // this->repl_mode = repl_mode;
 
-    while (!lexer->match(CodeEnd)) {
+    for (;;) {
+        if (lexer->match(CodeEnd))
+            break;
         statement();
         if (error.state()) {
             error.print_error_message();

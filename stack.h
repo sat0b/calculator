@@ -1,4 +1,7 @@
+#include "token.h"
 #include <stack>
+
+enum TokenKind;
 
 class Stack {
   private:
@@ -9,4 +12,5 @@ class Stack {
     int pop();
     void clear();
     bool exist();
+    bool operate(const TokenKind op);
 };

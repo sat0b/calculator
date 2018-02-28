@@ -24,23 +24,19 @@ class Error {
 class Parser {
   private:
     Lexer *lexer;
-    Token token;
     Stack stack;
     std::map<std::string, int> variables;
     Error error;
-    bool repl_mode;
 
-    void next();
-    void check_kind(const TokenKind kind);
     void statement();
+    void expression(int priority);
     void or_expression();
     void and_expression();
     void equal_expression();
     void than_expression();
-    void expression();
     void term();
     void factor();
-    void operate(const TokenKind op);
+    int operate(const TokenKind op);
     void show_variable_table() const;
     void variable_statement();
     void print_statement();
@@ -50,12 +46,10 @@ class Parser {
     void if_statement();
     void else_if_statement();
     void else_statement();
-    void skip_until(TokenKind kind);
-    Token consume();
     bool skip(TokenKind kind);
+    Token consume();
 
   public:
     Parser(Lexer *lexer);
-    void run(const std::string &line, bool repl_mode);
     void run();
 };
