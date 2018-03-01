@@ -136,11 +136,6 @@ void Parser::factor() {
     }
 }
 
-void Parser::show_variable_table() const {
-    for (auto v : variables)
-        std::cout << v.first << " : " << v.second << std::endl;
-}
-
 void Parser::run() {
     stack.clear();
     // lexer->show_tokens();
@@ -153,9 +148,7 @@ void Parser::run() {
     }
 }
 
-void Parser::parse_error() { std::exit(1); }
-
 void Parser::parse_error(std::string str) {
     std::cout << str << std::endl;
-    parse_error();
+    std::exit(1);
 }
