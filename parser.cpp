@@ -111,9 +111,7 @@ void Parser::expression(int priority) {
             return;
         TokenKind op = lexer->next_token().get_kind();
         expression(priority + 1);
-        bool success = stack.operate(op);
-        if (!success)
-            parse_error("Syntax error");
+        stack.operate(op);
     }
 }
 

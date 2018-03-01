@@ -13,5 +13,5 @@ class Stack {
     int pop();
     void clear();
     bool exist();
-    bool operate(const TokenKind op);
+    void operate(const TokenKind op);
 };

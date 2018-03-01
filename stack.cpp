@@ -23,10 +23,9 @@ bool Stack::exist() {
         return false;
 }
 
-bool Stack::operate(const TokenKind op) {
-    if (stack.size() < 2) {
-        std::cerr << "Stack underflow" << std::endl;
-    }
+void Stack::operate(const TokenKind op) {
+    if (stack.size() < 2)
+        error("Stack underflow");
     int d2 = pop();
     int d1 = pop();
     if (op == Plus)
@@ -55,11 +54,8 @@ bool Stack::operate(const TokenKind op) {
         push(d1 >= d2);
     else if (op == Mod)
         push(d1 % d2);
-    else {
-        std::cerr << "Not defined operator" << std::endl;
-        return false;
-    }
-    return true;
+    else
+        error("Not defined operator");
 }
 
 void Stack::error(std::string msg) {
