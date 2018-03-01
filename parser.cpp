@@ -1,6 +1,7 @@
 #include "parser.h"
 #include "lexer.h"
 #include "token.h"
+#include <cstdlib>
 #include <iostream>
 
 namespace {
@@ -16,45 +17,6 @@ const int order_max = 6;
 
 } // namespace
 
-void Error::print_error_message() {
-    switch (err_type) {
-    case ErrorType::SyntaxError:
-        std::cerr << "Syntax Error" << std::endl;
-        break;
-    case ErrorType::NameError:
-        std::cerr << "Name Error, no such a variable " << err_message
-                  << std::endl;
-        break;
-    case ErrorType::SymbolError:
-        std::cerr << "Symbol Error" << err_message << std::endl;
-    default:
-        std::cerr << "Error" << std::endl;
-        break;
-    }
-}
-
-void Error::set_syntax_error(std::string msg) {
-    err = true;
-    err_type = ErrorType::SyntaxError;
-    err_message = msg;
-}
-
-void Error::set_name_error(std::string msg) {
-    err = true;
-    err_type = ErrorType::NameError;
-    err_message = msg;
-}
-
-void Error::set_symbol_error(std::string msg) {
-    err = true;
-    err_type = ErrorType::SymbolError;
-    err_message = msg;
-}
-
-void Error::reset() { err = false; }
-
-bool Error::state() { return err; }
-
 Parser::Parser(Lexer *lexer) : lexer(lexer) {}
 
 void Parser::variable_statement() {
@@ -65,7 +27,7 @@ void Parser::variable_statement() {
         if (stack.exist())
             variables[name] = stack.pop();
         else
-            error.set_syntax_error("");
+            parse_error("Syntax error");
     }
 }
 
@@ -79,15 +41,11 @@ void Parser::print_statement() {
 
 void Parser::numeric_statement() {
     expression(1);
-    if (error.state())
-        return;
     lexer->match(StatementEnd);
-    if (error.state())
-        return;
     if (stack.exist())
         std::cout << stack.pop() << std::endl;
     else
-        error.set_syntax_error("");
+        parse_error("Syntax error");
 }
 
 void Parser::block() {
@@ -108,12 +66,10 @@ void Parser::if_statement() {
     lexer->skip(RightBracket);
 
     int val = 0;
-    if (stack.exist()) {
+    if (stack.exist())
         val = stack.pop();
-    } else {
-        error.set_syntax_error("");
-        return;
-    }
+    else
+        parse_error("Syntax error");
     lexer->skip(StatementEnd);
 
     if (val) {
@@ -130,8 +86,6 @@ void Parser::else_if_statement() {}
 void Parser::else_statement() {}
 
 void Parser::statement() {
-    if (error.state())
-        return;
     if (lexer->match(Variable))
         variable_statement();
     else if (lexer->skip(Print))
@@ -143,7 +97,7 @@ void Parser::statement() {
     else if (lexer->skip(For))
         for_statement();
     else
-        error.set_syntax_error("");
+        parse_error("Syntax error");
 }
 
 void Parser::expression(int priority) {
@@ -158,10 +112,8 @@ void Parser::expression(int priority) {
         TokenKind op = lexer->next_token().get_kind();
         expression(priority + 1);
         bool success = stack.operate(op);
-        if (!success) {
-            error.set_syntax_error("");
-            return;
-        }
+        if (!success)
+            parse_error("Syntax error");
     }
 }
 
@@ -175,7 +127,7 @@ void Parser::factor() {
         if (variables.count(token.get_name()) > 0)
             stack.push(variables[token.get_name()]);
         else
-            error.set_name_error(token.get_name());
+            parse_error("Name error, no such a variable " + token.get_name());
         break;
     case LeftBracket:
         expression(1);
@@ -192,7 +144,6 @@ void Parser::show_variable_table() const {
 }
 
 void Parser::run() {
-    error.reset();
     stack.clear();
     // lexer->show_tokens();
 
@@ -200,10 +151,13 @@ void Parser::run() {
         if (lexer->match(CodeEnd))
             break;
         statement();
-        if (error.state()) {
-            error.print_error_message();
-            return;
-        }
         lexer->skip(StatementEnd);
     }
+}
+
+void Parser::parse_error() { std::exit(1); }
+
+void Parser::parse_error(std::string str) {
+    std::cout << str << std::endl;
+    parse_error();
 }
