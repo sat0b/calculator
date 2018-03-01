@@ -74,16 +74,21 @@ void Parser::if_statement() {
 
     if (val) {
         block();
-    } else {
-        // jump statement
-        // skip_until(ElseIf);
-        // skip_until(Else);
+        lexer->skip_until(End);
+        return;
+    }
+
+    while (lexer->jump_if()) {
+        if (lexer->skip(ElseIf)) {
+            if_statement();
+        } else if (lexer->skip(Else)) {
+            lexer->skip(StatementEnd);
+            block();
+        } else if (lexer->skip(End)) {
+            break;
+        }
     }
 }
-
-void Parser::else_if_statement() {}
-
-void Parser::else_statement() {}
 
 void Parser::statement() {
     if (lexer->match(Variable))

@@ -50,6 +50,7 @@ class Token {
     TokenKind kind;
     std::string token;
     TokenKind get_token_kind(const std::string &token) const;
+    int jmp_addr;
 
   public:
     Token(){};

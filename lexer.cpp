@@ -11,7 +11,6 @@ Lexer::Lexer(const std::string &code) : code_(code) {
         if (token.get_kind() == CodeEnd)
             break;
     }
-
     // Initalize token position tkp
     tkp = 0;
 }
@@ -93,7 +92,27 @@ bool Lexer::skip(TokenKind token_kind) {
     return true;
 }
 
+bool Lexer::jump_if() {
+    for (int pc = tkp; pc < tokens.size(); pc++) {
+        if (tokens[pc].get_kind() == ElseIf || tokens[pc].get_kind() == Else ||
+            tokens[pc].get_kind() == End) {
+            tkp = pc;
+            return true;
+        }
+    }
+    return false;
+}
+
 void Lexer::skip() { tkp++; }
+
+bool Lexer::skip_until(TokenKind token_kind) {
+    for (Token token = next_token(); token.get_kind() != CodeEnd;
+         token = next_token()) {
+        if (token.get_kind() == token_kind)
+            return true;
+    }
+    return false;
+}
 
 bool Lexer::match(TokenKind token_kind) {
     Token token = read_token();

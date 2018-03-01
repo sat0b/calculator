@@ -44,8 +44,6 @@ class Parser {
     void block();
     void for_statement();
     void if_statement();
-    void else_if_statement();
-    void else_statement();
     bool skip(TokenKind kind);
     void parse_error();
     void parse_error(std::string msg);

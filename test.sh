@@ -21,5 +21,7 @@ assert-equal test/ex8.ca 2
 assert-equal test/ex9.ca "Name error, no such a variable a"
 assert-equal test/ex10.ca "Syntax error"
 assert-equal test/ex11.ca 10
+assert-equal test/ex12.ca 5
+assert-equal test/ex13.ca 2
 
 echo OK

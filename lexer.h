@@ -27,6 +27,8 @@ class Lexer {
     Token read_token();
     void show_tokens() const;
     bool skip(TokenKind token_kind);
+    bool skip_until(TokenKind token_kind);
     void skip();
     bool match(TokenKind token_kind);
+    bool jump_if();
 };
