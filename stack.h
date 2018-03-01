@@ -6,6 +6,7 @@ enum TokenKind;
 class Stack {
   private:
     std::stack<int> stack;
+    void error(std::string msg);
 
   public:
     void push(int value);

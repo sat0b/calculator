@@ -64,12 +64,7 @@ void Parser::if_statement() {
     lexer->skip(LeftBracket);
     expression(1);
     lexer->skip(RightBracket);
-
-    int val = 0;
-    if (stack.exist())
-        val = stack.pop();
-    else
-        parse_error("Syntax error");
+    int val = stack.pop();
     lexer->skip(StatementEnd);
 
     if (val) {

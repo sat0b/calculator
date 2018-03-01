@@ -1,6 +1,6 @@
 #include "stack.h"
+#include <cstdlib>
 #include <iostream>
-#include <limits>
 
 void Stack::push(int value) { stack.push(value); }
 
@@ -26,7 +26,6 @@ bool Stack::exist() {
 bool Stack::operate(const TokenKind op) {
     if (stack.size() < 2) {
         std::cerr << "Stack underflow" << std::endl;
-        return false;
     }
     int d2 = pop();
     int d1 = pop();
@@ -61,4 +60,9 @@ bool Stack::operate(const TokenKind op) {
         return false;
     }
     return true;
+}
+
+void Stack::error(std::string msg) {
+    std::cerr << msg << std::endl;
+    exit(1);
 }
