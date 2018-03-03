@@ -37,8 +37,6 @@ enum TokenKind {
     CodeEnd,
 };
 
-std::string get_token_string(TokenKind kind);
-
 class Token {
   private:
     TokenKind kind;
