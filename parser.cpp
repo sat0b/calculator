@@ -122,7 +122,6 @@ void Parser::read_stat() {
 void Parser::eval_expression(int priority) {
     if (priority > order_max)
         return eval_factor();
-
     eval_expression(priority + 1);
     for (;;) {
         TokenKind tk = lexer->read_token().get_kind();
