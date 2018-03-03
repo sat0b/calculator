@@ -50,8 +50,9 @@ void Parser::read_numeric_stat() {
 
 void Parser::read_block() {
     for (;;) {
-        if (lexer->skip(ElseIf) || lexer->skip(Else) || lexer->skip(End) ||
-            lexer->skip(Break) || lexer->skip(Return))
+        while (lexer->skip(ElseIf) || lexer->skip(Else))
+            lexer->jump_block();
+        if (lexer->skip(End))
             return;
         read_stat();
         lexer->skip(StatementEnd);
@@ -83,18 +84,19 @@ void Parser::read_if_stat() {
     int val = read_cond();
     if (val) {
         read_block();
-        lexer->skip_until(End);
         return;
     }
 
-    while (lexer->jump_if()) {
+    while (lexer->jump_block()) {
         if (lexer->skip(ElseIf)) {
             read_if_stat();
+            return;
         } else if (lexer->skip(Else)) {
             lexer->skip(StatementEnd);
             read_block();
+            return;
         } else if (lexer->skip(End)) {
-            break;
+            return;
         }
     }
 }

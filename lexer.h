@@ -6,8 +6,8 @@
 class Lexer {
   private:
     std::string code_;
-    int p;
-    int tkp;
+    size_t p;
+    size_t tkp;
     char c;
     const char eof = -1;
     std::vector<Token> tokens;
@@ -32,4 +32,5 @@ class Lexer {
     bool match(TokenKind token_kind);
     bool jump_if();
     bool jump_back(TokenKind token_kind);
+    bool jump_block();
 };

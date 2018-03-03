@@ -1,4 +1,4 @@
-#include "lexer.h"
+pc#include "lexer.h"
 #include <iostream>
 
 Lexer::Lexer(const std::string &code) : code_(code) {
@@ -93,7 +93,7 @@ bool Lexer::skip(TokenKind token_kind) {
 }
 
 bool Lexer::jump_if() {
-    for (int pc = tkp; pc < tokens.size(); pc++) {
+    for (size_t pc = tkp; pc < tokens.size(); pc++) {
         if (tokens[pc].get_kind() == ElseIf || tokens[pc].get_kind() == Else ||
             tokens[pc].get_kind() == End) {
             tkp = pc;
@@ -104,11 +104,29 @@ bool Lexer::jump_if() {
 }
 
 bool Lexer::jump_back(TokenKind token_kind) {
-    for (int pc = tkp; pc > 0; pc--) {
+    for (size_t pc = tkp; pc > 0; pc--) {
         if (tokens[pc].get_kind() == token_kind) {
             tkp = pc + 1;
             return true;
         }
+    }
+    return false;
+}
+
+bool Lexer::jump_block() {
+    int count = 0;
+    for (size_t pc = tkp; pc < tokens.size(); pc++) {
+        TokenKind kind = tokens[pc].get_kind();
+        if (count == 0) {
+            if (kind == End || kind == ElseIf || kind == Else) {
+                tkp = pc;
+                return true;
+            }
+        }
+        if (kind == For || kind == If)
+            count++;
+        else if (kind == End)
+            count--;
     }
     return false;
 }
