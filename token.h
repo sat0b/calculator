@@ -4,13 +4,6 @@
 #include <vector>
 
 enum TokenKind {
-    Numeric,
-    Identifier,
-    Keyword,
-    Operator,
-    End,
-
-    // deprecated
     Symbol,
     Integer,
     Product,
@@ -36,6 +29,7 @@ enum TokenKind {
     If,
     ElseIf,
     Else,
+    End,
     Break,
     Return,
     Function,
@@ -50,7 +44,6 @@ class Token {
     TokenKind kind;
     std::string token;
     TokenKind get_token_kind(const std::string &token) const;
-    int jmp_addr;
 
   public:
     Token(){};

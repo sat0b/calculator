@@ -19,3 +19,6 @@ stack.o: stack.cpp stack.h
 .PHONY: test
 test: test.sh calculator $(wildcard test/*.ca)
 	./test.sh
+
+clean:
+	rm *.o
