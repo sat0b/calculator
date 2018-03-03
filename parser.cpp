@@ -72,7 +72,8 @@ void Parser::read_for_stat() {
     for (;;) {
         int val = read_cond();
         if (!val) {
-            lexer->skip_until(End);
+            lexer->jump_block();
+            lexer->skip(End);
             return;
         }
         read_block();
