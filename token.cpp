@@ -61,8 +61,8 @@ TokenKind Token::get_token_kind(const std::string &token) const {
     return Variable;
 }
 
-Token::Token(std::string str, TokenKind tokenKind)
-    : token(str), kind(tokenKind) {}
+Token::Token(std::string str, TokenKind token_kind)
+    : token(str), kind(token_kind) {}
 
 Token::Token(std::string str) {
     this->kind = get_token_kind(str);
