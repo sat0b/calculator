@@ -1,4 +1,4 @@
-pc#include "lexer.h"
+#include "lexer.h"
 #include <iostream>
 
 Lexer::Lexer(const std::string &code) : code_(code) {
