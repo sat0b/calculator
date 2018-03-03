@@ -19,11 +19,11 @@ const int order_max = 6;
 
 Parser::Parser(Lexer *lexer) : lexer(lexer) {}
 
-void Parser::variable_statement() {
+void Parser::read_variable_stat() {
     Token token = lexer->next_token();
     std::string name = token.get_name();
     if (lexer->skip(Assign)) {
-        expression(1);
+        eval_expression(1);
         if (stack.exist())
             variables[name] = stack.pop();
         else
@@ -31,16 +31,16 @@ void Parser::variable_statement() {
     }
 }
 
-void Parser::print_statement() {
+void Parser::read_print_stat() {
     if (lexer->match(Variable) || lexer->match(Integer)) {
-        expression(1);
+        eval_expression(1);
         if (stack.exist())
             std::cout << stack.pop() << std::endl;
     }
 }
 
-void Parser::numeric_statement() {
-    expression(1);
+void Parser::read_numeric_stat() {
+    eval_expression(1);
     lexer->match(StatementEnd);
     if (stack.exist())
         std::cout << stack.pop() << std::endl;
@@ -48,88 +48,88 @@ void Parser::numeric_statement() {
         parse_error("Syntax error");
 }
 
-void Parser::block() {
+void Parser::read_block() {
     for (;;) {
         if (lexer->skip(ElseIf) || lexer->skip(Else) || lexer->skip(End) ||
             lexer->skip(Break) || lexer->skip(Return))
             return;
-        statement();
+        read_stat();
         lexer->skip(StatementEnd);
     }
 }
 
-int Parser::parse_truth() {
+int Parser::read_cond() {
     lexer->skip(LeftBracket);
-    expression(1);
+    eval_expression(1);
     lexer->skip(RightBracket);
     int val = stack.pop();
     lexer->skip(StatementEnd);
     return val;
 }
 
-void Parser::for_statement() {
+void Parser::read_for_stat() {
     for (;;) {
-        int val = parse_truth();
+        int val = read_cond();
         if (!val) {
             lexer->skip_until(End);
             return;
         }
-        block();
+        read_block();
         lexer->jump_back(For);
     }
 }
 
-void Parser::if_statement() {
-    int val = parse_truth();
+void Parser::read_if_stat() {
+    int val = read_cond();
     if (val) {
-        block();
+        read_block();
         lexer->skip_until(End);
         return;
     }
 
     while (lexer->jump_if()) {
         if (lexer->skip(ElseIf)) {
-            if_statement();
+            read_if_stat();
         } else if (lexer->skip(Else)) {
             lexer->skip(StatementEnd);
-            block();
+            read_block();
         } else if (lexer->skip(End)) {
             break;
         }
     }
 }
 
-void Parser::statement() {
+void Parser::read_stat() {
     if (lexer->match(Variable))
-        variable_statement();
+        read_variable_stat();
     else if (lexer->skip(Print))
-        print_statement();
+        read_print_stat();
     else if (lexer->skip(Integer))
-        numeric_statement();
+        read_numeric_stat();
     else if (lexer->skip(If))
-        if_statement();
+        read_if_stat();
     else if (lexer->skip(For))
-        for_statement();
+        read_for_stat();
     else
         parse_error("Syntax error");
 }
 
-void Parser::expression(int priority) {
+void Parser::eval_expression(int priority) {
     if (priority > order_max)
-        return factor();
+        return eval_factor();
 
-    expression(priority + 1);
+    eval_expression(priority + 1);
     for (;;) {
         TokenKind tk = lexer->read_token().get_kind();
         if (priority != exp_order[tk])
             return;
         TokenKind op = lexer->next_token().get_kind();
-        expression(priority + 1);
+        eval_expression(priority + 1);
         stack.operate(op);
     }
 }
 
-void Parser::factor() {
+void Parser::eval_factor() {
     Token token = lexer->next_token();
     switch (token.get_kind()) {
     case Integer:
@@ -142,7 +142,7 @@ void Parser::factor() {
             parse_error("Name error, no such a variable " + token.get_name());
         break;
     case LeftBracket:
-        expression(1);
+        eval_expression(1);
         lexer->skip(RightBracket);
         break;
     default:
@@ -157,7 +157,7 @@ void Parser::run() {
     for (;;) {
         if (lexer->match(CodeEnd))
             break;
-        statement();
+        read_stat();
         lexer->skip(StatementEnd);
     }
 }

@@ -10,17 +10,16 @@ class Parser {
     Stack stack;
     std::map<std::string, int> variables;
 
-    void statement();
-    void expression(int priority);
-    void factor();
-    int operate(const TokenKind op);
-    void variable_statement();
-    void print_statement();
-    void numeric_statement();
-    void block();
-    void for_statement();
-    void if_statement();
-    int parse_truth();
+    void eval_expression(int priority);
+    void eval_factor();
+    int read_cond();
+    void read_stat();
+    void read_block();
+    void read_print_stat();
+    void read_variable_stat();
+    void read_numeric_stat();
+    void read_for_stat();
+    void read_if_stat();
     bool skip(TokenKind kind);
     void parse_error(std::string msg);
     Token consume();
