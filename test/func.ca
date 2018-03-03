@@ -1,0 +1,6 @@
+function add(a, b)
+    return a + b
+end
+
+a = calc(10, 15)
+print a
