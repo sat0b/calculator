@@ -31,4 +31,5 @@ class Lexer {
     void skip();
     bool match(TokenKind token_kind);
     bool jump_if();
+    bool jump_back(TokenKind token_kind);
 };

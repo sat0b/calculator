@@ -20,6 +20,7 @@ class Parser {
     void block();
     void for_statement();
     void if_statement();
+    int parse_truth();
     bool skip(TokenKind kind);
     void parse_error(std::string msg);
     Token consume();

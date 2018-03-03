@@ -23,5 +23,6 @@ assert-equal test/ex10.ca "Syntax error"
 assert-equal test/ex11.ca 10
 assert-equal test/ex12.ca 5
 assert-equal test/ex13.ca 2
+assert-equal test/ex14.ca 55
 
 echo OK

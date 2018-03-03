@@ -103,6 +103,16 @@ bool Lexer::jump_if() {
     return false;
 }
 
+bool Lexer::jump_back(TokenKind token_kind) {
+    for (int pc = tkp; pc > 0; pc--) {
+        if (tokens[pc].get_kind() == token_kind) {
+            tkp = pc + 1;
+            return true;
+        }
+    }
+    return false;
+}
+
 void Lexer::skip() { tkp++; }
 
 bool Lexer::skip_until(TokenKind token_kind) {

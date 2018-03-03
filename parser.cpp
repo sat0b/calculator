@@ -58,15 +58,29 @@ void Parser::block() {
     }
 }
 
-void Parser::for_statement() {}
-
-void Parser::if_statement() {
+int Parser::parse_truth() {
     lexer->skip(LeftBracket);
     expression(1);
     lexer->skip(RightBracket);
     int val = stack.pop();
     lexer->skip(StatementEnd);
+    return val;
+}
 
+void Parser::for_statement() {
+    for (;;) {
+        int val = parse_truth();
+        if (!val) {
+            lexer->skip_until(End);
+            return;
+        }
+        block();
+        lexer->jump_back(For);
+    }
+}
+
+void Parser::if_statement() {
+    int val = parse_truth();
     if (val) {
         block();
         lexer->skip_until(End);
