@@ -71,14 +71,16 @@ int Parser::read_cond() {
 
 void Parser::read_for_stat() {
     for (;;) {
+        size_t loop_back = lexer->get_addr();
         int val = read_cond();
-        if (!val) {
+        if (val) {
+            read_block();
+            lexer->jump_addr(loop_back);
+        } else {
             lexer->jump_block();
             lexer->skip(End);
             return;
         }
-        read_block();
-        lexer->jump_back(For);
     }
 }
 

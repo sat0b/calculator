@@ -91,27 +91,6 @@ bool Lexer::skip(TokenKind token_kind) {
     return true;
 }
 
-bool Lexer::jump_if() {
-    for (size_t pc = tkp; pc < tokens.size(); pc++) {
-        if (tokens[pc].get_kind() == ElseIf || tokens[pc].get_kind() == Else ||
-            tokens[pc].get_kind() == End) {
-            tkp = pc;
-            return true;
-        }
-    }
-    return false;
-}
-
-bool Lexer::jump_back(TokenKind token_kind) {
-    for (size_t pc = tkp; pc > 0; pc--) {
-        if (tokens[pc].get_kind() == token_kind) {
-            tkp = pc + 1;
-            return true;
-        }
-    }
-    return false;
-}
-
 bool Lexer::jump_block() {
     int count = 0;
     for (size_t pc = tkp; pc < tokens.size(); pc++) {
@@ -129,6 +108,10 @@ bool Lexer::jump_block() {
     }
     return false;
 }
+
+size_t Lexer::get_addr() { return tkp; }
+
+void Lexer::jump_addr(size_t addr) { tkp = addr; }
 
 void Lexer::skip() { tkp++; }
 
