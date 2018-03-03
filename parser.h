@@ -3,10 +3,11 @@
 #include "stack.h"
 #include "token.h"
 #include <map>
+#include <memory>
 
 class Parser {
   private:
-    Lexer *lexer;
+    std::unique_ptr<Lexer> lexer;
     Stack stack;
     std::map<std::string, int> variables;
 
@@ -25,6 +26,6 @@ class Parser {
     Token consume();
 
   public:
-    Parser(Lexer *lexer);
+    Parser(std::unique_ptr<Lexer> lexer);
     void run();
 };

@@ -3,6 +3,7 @@
 #include "token.h"
 #include <cstdlib>
 #include <iostream>
+#include <memory>
 
 namespace {
 
@@ -17,7 +18,7 @@ const int order_max = 6;
 
 } // namespace
 
-Parser::Parser(Lexer *lexer) : lexer(lexer) {}
+Parser::Parser(std::unique_ptr<Lexer> lexer) : lexer(std::move(lexer)) {}
 
 void Parser::read_variable_stat() {
     Token token = lexer->next_token();

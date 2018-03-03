@@ -7,6 +7,7 @@
 #include <iostream>
 #include <istream>
 #include <map>
+#include <memory>
 #include <sstream>
 #include <vector>
 
@@ -24,8 +25,8 @@ void run(const std::string &file_name) {
             line += ";";
         code += line;
     }
-    Lexer *lexer = new Lexer(code);
-    Parser parser(lexer);
+    std::unique_ptr<Lexer> lexer = std::make_unique<Lexer>(code);
+    Parser parser(std::move(lexer));
     parser.run();
 }
 
