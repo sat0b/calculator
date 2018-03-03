@@ -25,8 +25,6 @@ class Lexer {
     Token next_token();
     Token read_token();
     bool skip(TokenKind token_kind);
-    bool skip_until(TokenKind token_kind);
-    void skip();
     bool match(TokenKind token_kind);
     size_t get_addr();
     void jump_addr(size_t addr);

@@ -113,8 +113,6 @@ size_t Lexer::get_addr() { return tkp; }
 
 void Lexer::jump_addr(size_t addr) { tkp = addr; }
 
-void Lexer::skip() { tkp++; }
-
 bool Lexer::match(TokenKind token_kind) {
     Token token = read_token();
     if (token.get_kind() == token_kind)
