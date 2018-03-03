@@ -1,4 +1,4 @@
-CXXFLAGS := -std=c++14 -Wextra -g
+CXXFLAGS := -std=c++14 -g -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded
 CXX := clang++ $(CXXFLAGS)
 
 calculator: calculator.cpp token.o parser.o stack.o lexer.o

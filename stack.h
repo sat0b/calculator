@@ -1,8 +1,6 @@
 #include "token.h"
 #include <stack>
 
-enum TokenKind;
-
 class Stack {
   private:
     std::stack<int> stack;

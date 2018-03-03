@@ -46,7 +46,7 @@ class Token {
     TokenKind get_token_kind(const std::string &token) const;
 
   public:
-    Token(){};
+    Token();
     Token(std::string str);
     Token(std::string str, TokenKind token_kind);
     Token(TokenKind kind);

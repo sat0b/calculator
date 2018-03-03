@@ -4,7 +4,6 @@
 Lexer::Lexer(const std::string &code) : code_(code) {
     // Lexical analysis
     p = 0;
-    c = code_[p];
     for (;;) {
         Token token = lex();
         tokens.push_back(token);
@@ -132,15 +131,6 @@ bool Lexer::jump_block() {
 }
 
 void Lexer::skip() { tkp++; }
-
-bool Lexer::skip_until(TokenKind token_kind) {
-    for (Token token = next_token(); token.get_kind() != CodeEnd;
-         token = next_token()) {
-        if (token.get_kind() == token_kind)
-            return true;
-    }
-    return false;
-}
 
 bool Lexer::match(TokenKind token_kind) {
     Token token = read_token();

@@ -20,7 +20,7 @@ void run(const std::string &file_name) {
     std::string line;
     std::string code;
     while (getline(ifs, line)) {
-        const int n = line.length() - 1;
+        const size_t n = line.length() - 1;
         if (line[n] != '\n' && line[n] != ';')
             line += ";";
         code += line;

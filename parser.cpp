@@ -88,7 +88,6 @@ void Parser::read_if_stat() {
         read_block();
         return;
     }
-
     while (lexer->jump_block()) {
         if (lexer->skip(ElseIf)) {
             read_if_stat();
@@ -156,8 +155,6 @@ void Parser::eval_factor() {
 
 void Parser::run() {
     stack.clear();
-    // lexer->show_tokens();
-
     for (;;) {
         if (lexer->match(CodeEnd))
             break;

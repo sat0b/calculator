@@ -8,7 +8,6 @@ class Lexer {
     std::string code_;
     size_t p;
     size_t tkp;
-    char c;
     const char eof = -1;
     std::vector<Token> tokens;
     char read();
@@ -25,7 +24,6 @@ class Lexer {
     Lexer(const std::string &code);
     Token next_token();
     Token read_token();
-    void show_tokens() const;
     bool skip(TokenKind token_kind);
     bool skip_until(TokenKind token_kind);
     void skip();
