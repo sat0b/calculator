@@ -10,19 +10,18 @@ function assert-equal() {
     fi
 }
 
-assert-equal test/ex1.ca 30
-assert-equal test/ex2.ca 1300
-assert-equal test/ex3.ca 245
-assert-equal test/ex4.ca 0
-assert-equal test/ex5.ca 1
-assert-equal test/ex6.ca 2
-assert-equal test/ex7.ca 1
-assert-equal test/ex8.ca 2
-assert-equal test/ex9.ca "Name error, no such a variable a"
-assert-equal test/ex10.ca "Syntax error"
-assert-equal test/ex11.ca 10
-assert-equal test/ex12.ca 5
-assert-equal test/ex13.ca 2
-assert-equal test/ex14.ca 55
+assert-equal test/add.ca 30
+assert-equal test/add_prod.ca 1300
+assert-equal test/and.ca 0
+assert-equal test/or.ca 1
+assert-equal test/eq_neq.ca 2
+assert-equal test/le.ca 1
+assert-equal test/mod.ca 2
+assert-equal test/name_error.ca "Name error, no such a variable a"
+assert-equal test/syntax_error.ca "Syntax error"
+assert-equal test/if_true.ca 10
+assert-equal test/if_false.ca 5
+assert-equal test/if_elseif_else.ca 2
+assert-equal test/loop.ca 55
 
 echo OK
