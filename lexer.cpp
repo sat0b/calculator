@@ -26,9 +26,9 @@ char Lexer::consume() {
     return eof;
 }
 
-bool Lexer::skip_whitespace() {
+bool Lexer::skip_mark() {
     char c = read();
-    if (c == ' ') {
+    if (c == ' ' || c == ';') {
         consume();
         return true;
     }
@@ -69,7 +69,7 @@ Token Lexer::lex() {
     char c = read();
     if (c == eof)
         return Token::get_code_end_token();
-    if (skip_whitespace())
+    if (skip_mark())
         return lex();
     if (isdigit(c))
         return read_num();

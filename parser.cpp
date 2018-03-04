@@ -58,11 +58,8 @@ void Parser::read_function_call(std::string name) {
         i++;
     }
     local_var.push(args);
-    lexer->skip(StatementEnd);
-    while (!lexer->skip(End)) {
+    while (!lexer->skip(End))
         read_stat();
-        lexer->skip(StatementEnd);
-    }
     local_var.pop();
     lexer->jump_addr(ret_addr);
 }
@@ -77,7 +74,6 @@ void Parser::read_print_stat() {
 
 void Parser::read_numeric_stat() {
     eval_expression(1);
-    lexer->match(StatementEnd);
     std::cout << stack.pop() << std::endl;
 }
 
@@ -88,7 +84,6 @@ void Parser::read_block() {
         if (lexer->skip(End))
             return;
         read_stat();
-        lexer->skip(StatementEnd);
     }
 }
 
@@ -97,7 +92,6 @@ int Parser::read_cond() {
     eval_expression(1);
     lexer->skip(RightBracket);
     int val = stack.pop();
-    lexer->skip(StatementEnd);
     return val;
 }
 
@@ -127,7 +121,6 @@ void Parser::read_if_stat() {
             read_if_stat();
             return;
         } else if (lexer->skip(Else)) {
-            lexer->skip(StatementEnd);
             read_block();
             return;
         } else if (lexer->skip(End)) {
@@ -214,10 +207,8 @@ void Parser::eval_factor() {
 
 void Parser::run() {
     stack.clear();
-    while (!lexer->match(CodeEnd)) {
+    while (!lexer->match(CodeEnd))
         read_stat();
-        lexer->skip(StatementEnd);
-    }
 }
 
 void Parser::parse_error(std::string str) {

@@ -12,7 +12,7 @@ class Lexer {
     std::vector<Token> tokens;
     char read();
     char consume();
-    bool skip_whitespace();
+    bool skip_mark();
     Token read_num();
     Token read_operator();
     Token read_identifier();

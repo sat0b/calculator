@@ -34,7 +34,6 @@ enum TokenKind {
     Break,
     Return,
     Function,
-    StatementEnd,
     CodeEnd,
 };
 

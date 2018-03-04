@@ -36,8 +36,6 @@ TokenKind Token::get_token_kind(const std::string &token) const {
         return GreaterEqual;
     if (token == "%")
         return Mod;
-    if (token == ";")
-        return StatementEnd;
     if (token == "print")
         return Print;
     if (token == "for")
