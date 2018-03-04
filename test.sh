@@ -24,5 +24,6 @@ assert-equal test/if_false.ca 5
 assert-equal test/if_elseif_else.ca 2
 assert-equal test/loop.ca 55
 assert-equal test/nested_for.ca 150
+assert-equal test/func.ca 25
 
 echo OK
