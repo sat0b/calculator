@@ -56,9 +56,11 @@ TokenKind Token::get_token_kind(const std::string &token) const {
         return Return;
     if (token == "function")
         return Function;
+    if (token == ",")
+        return Comma;
     if (token == "end")
         return End;
-    return Variable;
+    return Symbol;
 }
 
 Token::Token(std::string str, TokenKind token_kind)
