@@ -39,7 +39,23 @@ void Parser::read_function_call(std::string name) {
     for (;;) {
         if (lexer->skip(RightBracket))
             break;
-        int value = lexer->next_token().get_value();
+        Token token = lexer->next_token();
+        int value;
+        if (token.get_kind() == Integer) {
+            value = token.get_value();
+        } else if (token.get_kind() == Symbol) {
+            std::string name = token.get_name();
+
+            std::map<std::string, int> args;
+            if (local_var.size() > 0)
+                args = local_var.top();
+            if (args.count(name) > 0)
+                value = args[name];
+            else if (global_var.count(name) > 0)
+                value = global_var[name];
+            else
+                parse_error("Name error, no such a variable " + name);
+        }
         lexer->skip(Comma);
         vargs.push_back(value);
     }
