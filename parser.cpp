@@ -160,9 +160,8 @@ void Parser::read_stat() {
         read_function_def();
     else if (lexer->skip(Return))
         read_return_stat();
-    else {
+    else
         parse_error("Syntax error");
-    }
 }
 
 void Parser::eval_expression(int priority) {
