@@ -109,6 +109,29 @@ bool Lexer::jump_block() {
     return false;
 }
 
+bool Lexer::jump_end_for() {
+    int n_skip = 0;
+    for (int pc = tkp; pc >= 0; pc--) {
+        TokenKind kind = tokens[pc].get_kind();
+        if (kind == For)
+            break;
+        else if (kind == If)
+            n_skip++;
+    }
+    for (int pc = tkp; pc < tokens.size(); pc++) {
+        TokenKind kind = tokens[pc].get_kind();
+        if (kind == End) {
+            if (n_skip > 0) {
+                n_skip--;
+            } else if (n_skip == 0) {
+                tkp = pc;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 size_t Lexer::get_addr() { return tkp; }
 
 void Lexer::jump_addr(size_t addr) { tkp = addr; }

@@ -1,0 +1,8 @@
+a = 0
+for (1)
+    if (a > 10)
+        break
+    end
+    a = a + 1
+end
+print a

@@ -88,6 +88,11 @@ void Parser::read_block() {
             read_return_stat();
             return;
         }
+        if (lexer->skip(Break)) {
+            lexer->jump_end_for();
+            break_flg = true;
+            return;
+        }
         read_stat();
     }
 }
@@ -106,6 +111,10 @@ void Parser::read_for_stat() {
         int val = read_cond();
         if (val) {
             read_block();
+            if (break_flg) {
+                break_flg = false;
+                return;
+            }
             lexer->jump_addr(loop_back);
         } else {
             lexer->jump_block();

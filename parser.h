@@ -13,6 +13,7 @@ class Parser {
     std::map<std::string, int> global_var;
     std::stack<std::map<std::string, int>> local_var;
     std::map<std::string, size_t> functions;
+    bool break_flg = false;
 
     void eval_expression(int priority);
     void eval_factor();

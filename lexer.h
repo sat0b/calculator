@@ -29,4 +29,5 @@ class Lexer {
     size_t get_addr();
     void jump_addr(size_t addr);
     bool jump_block();
+    bool jump_end_for();
 };
