@@ -1,0 +1,17 @@
+sum = 0
+a = 0
+for (1)
+    if (a > 2)
+        break
+    end
+    b = 0
+    for (1)
+        if (b > 2)
+            break
+        end
+        sum = sum + b
+        b = b + 1
+    end
+    a = a + 1
+end
+print sum
