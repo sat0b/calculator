@@ -111,12 +111,22 @@ bool Lexer::jump_block() {
 
 bool Lexer::jump_end_for() {
     int n_skip = 0;
+    int invalid_block = 0;
     for (int pc = tkp; pc >= 0; pc--) {
         TokenKind kind = tokens[pc].get_kind();
-        if (kind == For)
-            break;
-        else if (kind == If)
-            n_skip++;
+        if (invalid_block == 0) {
+            if (kind == For) {
+                break;
+            } else if (kind == If) {
+                n_skip++;
+                continue;
+            }
+        } else {
+            if (kind == For || kind == If)
+                invalid_block--;
+        }
+        if (kind == End)
+            invalid_block++;
     }
     for (int pc = tkp; pc < tokens.size(); pc++) {
         TokenKind kind = tokens[pc].get_kind();

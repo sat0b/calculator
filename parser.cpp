@@ -36,9 +36,7 @@ void Parser::read_return_stat() { eval_expression(1); }
 
 void Parser::read_function_call(std::string name) {
     std::vector<int> vargs;
-    for (;;) {
-        if (lexer->skip(RightBracket))
-            break;
+    while (!lexer->skip(RightBracket)) {
         eval_expression(1);
         int value = stack.pop();
         lexer->skip(Comma);
@@ -88,7 +86,7 @@ void Parser::read_block() {
             read_return_stat();
             return;
         }
-        if (lexer->skip(Break)) {
+        if (lexer->match(Break)) {
             lexer->jump_end_for();
             break_flg = true;
             return;
@@ -101,15 +99,13 @@ int Parser::read_cond() {
     lexer->skip(LeftBracket);
     eval_expression(1);
     lexer->skip(RightBracket);
-    int val = stack.pop();
-    return val;
+    return stack.pop();
 }
 
 void Parser::read_for_stat() {
     for (;;) {
         size_t loop_back = lexer->get_addr();
-        int val = read_cond();
-        if (val) {
+        if (read_cond()) {
             read_block();
             if (break_flg) {
                 break_flg = false;
@@ -125,8 +121,7 @@ void Parser::read_for_stat() {
 }
 
 void Parser::read_if_stat() {
-    int val = read_cond();
-    if (val) {
+    if (read_cond()) {
         read_block();
         return;
     }
