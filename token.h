@@ -34,6 +34,7 @@ enum TokenKind {
     Break,
     Return,
     Function,
+    String,
     CodeEnd,
 };
 
@@ -51,6 +52,5 @@ class Token {
     TokenKind get_kind() const;
     int get_value() const;
     std::string get_name() const;
-    std::string to_string();
     static Token get_code_end_token();
 };

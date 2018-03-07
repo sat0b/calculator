@@ -61,6 +61,8 @@ TokenKind Token::get_token_kind(const std::string &token) const {
     return Symbol;
 }
 
+Token::Token() {}
+
 Token::Token(std::string str, TokenKind token_kind)
     : token(str), kind(token_kind) {}
 

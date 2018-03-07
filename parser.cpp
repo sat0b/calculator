@@ -64,6 +64,9 @@ void Parser::read_function_call(std::string name) {
 }
 
 void Parser::read_print_stat() {
+    if (lexer->match(String)) {
+        std::cout << lexer->next_token().get_name() << std::endl;
+    }
     if (lexer->match(Symbol) || lexer->match(Integer)) {
         eval_expression(1);
         if (stack.exist())

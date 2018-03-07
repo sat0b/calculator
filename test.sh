@@ -26,5 +26,6 @@ assert-equal test/loop.ca 55
 assert-equal test/nested_for.ca 150
 assert-equal test/func.ca 25
 assert-equal test/func_var_arg.ca 15
+assert-equal test/hello.ca "Hello, world!"
 
 echo OK

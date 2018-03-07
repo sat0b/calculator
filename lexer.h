@@ -16,6 +16,7 @@ class Lexer {
     Token read_num();
     Token read_operator();
     Token read_identifier();
+    Token read_str();
     Token read_keyword();
     Token read_end();
     Token lex();

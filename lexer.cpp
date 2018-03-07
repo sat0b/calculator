@@ -65,6 +65,15 @@ Token Lexer::read_identifier() {
     return Token(str);
 }
 
+Token Lexer::read_str() {
+    std::string str;
+    consume(); // begin "
+    while (read() != '"')
+        str += consume();
+    consume(); // end "
+    return Token(str, String);
+}
+
 Token Lexer::lex() {
     char c = read();
     if (c == eof)
@@ -73,6 +82,8 @@ Token Lexer::lex() {
         return lex();
     if (isdigit(c))
         return read_num();
+    else if (c == '"')
+        return read_str();
     else if (isalpha(c))
         return read_identifier();
     else
