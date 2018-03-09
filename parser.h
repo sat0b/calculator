@@ -8,13 +8,14 @@
 
 class Parser {
   private:
+    std::vector<std::string> builtins = {"max", "min", "sum"};
     std::unique_ptr<Lexer> lexer;
     Stack stack;
     std::map<std::string, int> global_var;
     std::stack<std::map<std::string, int>> local_var;
     std::map<std::string, size_t> functions;
     bool break_flg = false;
-
+    void call_function(std::string name, std::vector<int> args);
     void eval_expression(int priority);
     void eval_factor();
     int read_cond();

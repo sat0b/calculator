@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <memory>
+#include <numeric>
 
 namespace {
 
@@ -34,6 +35,19 @@ void Parser::read_symbol_stat() {
 
 void Parser::read_return_stat() { eval_expression(1); }
 
+void Parser::call_function(std::string name, std::vector<int> args) {
+    if (name == "max") {
+        int max = *std::max_element(args.begin(), args.end());
+        stack.push(max);
+    } else if (name == "min") {
+        int min = *std::min_element(args.begin(), args.end());
+        stack.push(min);
+    } else if (name == "sum") {
+        int sum = std::accumulate(args.begin(), args.end(), 0);
+        stack.push(sum);
+    }
+}
+
 void Parser::read_function_call(std::string name) {
     std::vector<int> vargs;
     while (!lexer->skip(RightBracket)) {
@@ -41,6 +55,10 @@ void Parser::read_function_call(std::string name) {
         int value = stack.pop();
         lexer->skip(Comma);
         vargs.push_back(value);
+    }
+    if (std::count(builtins.begin(), builtins.end(), name) > 0) {
+        Parser::call_function(name, vargs);
+        return;
     }
     if (functions.count(name) == 0)
         parse_error("Name error, not defined function " + name);
