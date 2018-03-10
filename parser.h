@@ -1,4 +1,5 @@
 #pragma once
+#include "ast.h"
 #include "lexer.h"
 #include "stack.h"
 #include "token.h"
@@ -11,20 +12,20 @@ class Parser {
     std::vector<std::string> builtins = {"max", "min", "sum"};
     std::unique_ptr<Lexer> lexer;
     Stack stack;
-    std::map<std::string, int> global_var;
     std::stack<std::map<std::string, int>> local_var;
+    std::map<std::string, int> global_var;
     std::map<std::string, size_t> functions;
     bool break_flg = false;
     void call_function(std::string name, std::vector<int> args);
     void eval_expression(int priority);
     void eval_factor();
     int read_cond();
-    void read_stat();
-    void read_symbol_stat();
+    Ast *read_stat();
+    Ast *read_symbol_stat();
     void read_return_stat();
     void read_function_call(std::string name);
     void read_block();
-    void read_print_stat();
+    Ast *read_print_stat();
     void read_numeric_stat();
     void read_for_stat();
     void read_if_stat();
@@ -35,5 +36,5 @@ class Parser {
 
   public:
     Parser(std::unique_ptr<Lexer> lexer);
-    void run();
+    std::vector<Ast *> parse();
 };

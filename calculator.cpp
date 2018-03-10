@@ -1,4 +1,6 @@
+#include "ast.h"
 #include "parser.h"
+#include "runner.h"
 #include "token.h"
 #include <algorithm>
 #include <cassert>
@@ -27,7 +29,9 @@ void run(const std::string &file_name) {
     }
     std::unique_ptr<Lexer> lexer = std::make_unique<Lexer>(code);
     Parser parser(std::move(lexer));
-    parser.run();
+    std::vector<Ast *> astvec = parser.parse();
+    Runner runner(astvec);
+    runner.run();
 }
 
 int main(int argc, char **argv) {

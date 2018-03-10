@@ -1,8 +1,8 @@
 CXXFLAGS := -std=c++14 -g -Wall 
 CXX := clang++ $(CXXFLAGS)
 
-calculator: calculator.cpp token.o parser.o stack.o lexer.o
-	$(CXX) calculator.cpp token.o parser.o stack.o lexer.o -o calculator
+calculator: calculator.cpp token.o parser.o stack.o lexer.o ast.o runner.o
+	$(CXX) calculator.cpp token.o parser.o stack.o lexer.o ast.o -o calculator
 
 token.o: token.cpp token.h
 	$(CXX) -c token.cpp
@@ -15,6 +15,12 @@ parser.o: parser.cpp parser.h
 
 stack.o: stack.cpp stack.h
 	$(CXX) -c stack.cpp
+
+ast.o: ast.cpp ast.h
+	$(CXX) -c ast.cpp
+
+runner.o: runner.cpp runner.h
+	$(CXX) -c runner.cpp
 
 .PHONY: test
 test: test.sh calculator $(wildcard test/*.ca)
