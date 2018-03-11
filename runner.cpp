@@ -37,8 +37,11 @@ void Runner::run(AssignAst *ast) {
 }
 
 void Runner::run(PrintAst *ast) {
-    SymbolAst *sym_ast = dynamic_cast<SymbolAst *>(ast->ast);
-    std::cout << global_var[sym_ast->token.get_name()] << std::endl;
+    if (ast->expr->get_type() == Symbol)
+        run(dynamic_cast<SymbolAst *>(ast->expr));
+    else if (ast->expr->get_type() == Expr)
+        run(dynamic_cast<ExprAst *>(ast->expr));
+    std::cout << stack.pop() << std::endl;
 }
 
 void Runner::run(ExprAst *ast) {
@@ -58,5 +61,5 @@ void Runner::run(SymbolAst *ast) {
     if (global_var.count(name) > 0)
         stack.push(global_var[name]);
     else
-        std::cerr << "Not defined symbol " + name << std::endl;
+        std::cerr << "Name error, no such a variable " + name << std::endl;
 }

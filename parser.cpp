@@ -101,9 +101,8 @@ void Parser::read_function_call(std::string name) {
 // }
 
 Ast *Parser::read_print_stat() {
-    Token token = lexer->next_token();
-    SymbolAst *sym = new SymbolAst(token);
-    return new PrintAst(sym);
+    Ast *expr = read_expr(1);
+    return new PrintAst(expr);
 }
 
 void Parser::read_numeric_stat() {

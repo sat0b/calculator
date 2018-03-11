@@ -11,7 +11,7 @@ int IntAst::get_value() { return token.get_value(); }
 AssignAst::AssignAst(Ast *d, Ast *s) : dst(d), src(s) {}
 TokenKind AssignAst::get_type() { return Equal; }
 
-PrintAst::PrintAst(Ast *_ast) : ast(_ast) {}
+PrintAst::PrintAst(Ast *_expr) : expr(_expr) {}
 TokenKind PrintAst::get_type() { return Print; }
 
 AddAst::AddAst(Ast *_left, Ast *_right) : left(_left), right(_right) {}

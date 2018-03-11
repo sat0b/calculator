@@ -22,7 +22,7 @@ class AssignAst : public Ast {
 
 class PrintAst : public Ast {
   public:
-    Ast *ast;
+    Ast *expr;
     PrintAst(Ast *);
     virtual TokenKind get_type();
 };
