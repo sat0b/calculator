@@ -224,6 +224,11 @@ Ast *Parser::read_factor() {
         return new IntAst(token);
     case Symbol:
         return new SymbolAst(token);
+    case LeftBracket: {
+        Ast *ast = read_expr(1);
+        lexer->expect_skip(RightBracket);
+        return ast;
+    }
     default:
         return nullptr;
     }
