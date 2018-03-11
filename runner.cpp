@@ -22,8 +22,8 @@ void Runner::run(Ast *ast) {
     case Print:
         run((PrintAst *)ast);
         break;
-    case Plus:
-        run((AddAst *)ast);
+    case Expr:
+        run((ExprAst *)ast);
         break;
     default:
         break;
@@ -41,16 +41,14 @@ void Runner::run(PrintAst *ast) {
     std::cout << global_var[sym_ast->token.get_name()] << std::endl;
 }
 
-void Runner::run(AddAst *ast) {
+void Runner::run(ExprAst *ast) {
     if (ast->get_type() == Integer) {
         stack.push(dynamic_cast<IntAst *>(ast)->get_value());
         return;
     }
     run(ast->left);
     run(ast->right);
-    int right = stack.pop();
-    int left = stack.pop();
-    stack.push(left + right);
+    stack.operate(ast->token.get_kind());
 }
 
 void Runner::run(IntAst *ast) { stack.push(ast->get_value()); }

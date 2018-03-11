@@ -35,6 +35,7 @@ enum TokenKind {
     Return,
     Function,
     String,
+    Expr,
     CodeEnd,
 };
 

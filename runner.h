@@ -16,6 +16,7 @@ class Runner {
     Runner(std::vector<Ast *> _astvec);
     void run();
     void run(Ast *ast);
+    void run(ExprAst *ast);
     void run(AssignAst *ast);
     void run(PrintAst *ast);
     void run(AddAst *ast);

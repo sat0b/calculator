@@ -204,9 +204,10 @@ Ast *Parser::read_stat() {
 
 Ast *Parser::read_expr() {
     Ast *node = read_factor();
-    while (lexer->skip(Plus)) {
+    while (lexer->match(Plus) || lexer->match(Minus)) {
+        Token op = lexer->next_token();
         Ast *right = read_factor();
-        node = new AddAst(node, right);
+        node = new ExprAst(node, right, op);
     }
     return node;
 }

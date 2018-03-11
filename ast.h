@@ -41,3 +41,11 @@ class AddAst : public Ast {
     AddAst(Ast *left, Ast *right);
     virtual TokenKind get_type();
 };
+
+class ExprAst : public Ast {
+  public:
+    Ast *left, *right;
+    Token token;
+    ExprAst(Ast *, Ast *, Token);
+    virtual TokenKind get_type();
+};
