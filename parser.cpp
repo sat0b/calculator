@@ -36,7 +36,7 @@ Parser::Parser(std::unique_ptr<Lexer> lexer) : lexer(std::move(lexer)) {}
 
 Ast *Parser::read_symbol_stat() {
     SymbolAst *sym = new SymbolAst(lexer->next_token());
-    lexer->skip(Assign);
+    lexer->expect_skip(Assign);
     IntAst *val = new IntAst(lexer->next_token());
     return new AssignAst(sym, val);
 }

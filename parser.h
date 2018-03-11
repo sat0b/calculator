@@ -30,7 +30,6 @@ class Parser {
     void read_for_stat();
     void read_if_stat();
     void read_function_def();
-    bool skip(TokenKind kind);
     void parse_error(std::string msg);
     Token consume();
 
