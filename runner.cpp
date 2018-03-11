@@ -16,8 +16,14 @@ void Runner::run(Ast *ast) {
     case Integer:
         run((IntAst *)ast);
         break;
+    case Symbol:
+        run((SymbolAst *)ast);
+        break;
     case Print:
         run((PrintAst *)ast);
+        break;
+    case Plus:
+        run((AddAst *)ast);
         break;
     default:
         break;
@@ -26,13 +32,33 @@ void Runner::run(Ast *ast) {
 
 void Runner::run(AssignAst *ast) {
     SymbolAst *sym_ast = (SymbolAst *)ast->dst;
-    IntAst *int_ast = (IntAst *)ast->src;
-    global_var[sym_ast->token.get_name()] = int_ast->token.get_value();
+    run(ast->src);
+    global_var[sym_ast->token.get_name()] = stack.pop();
 }
 
 void Runner::run(PrintAst *ast) {
-    SymbolAst *sym_ast = (SymbolAst *)ast->ast;
+    SymbolAst *sym_ast = dynamic_cast<SymbolAst *>(ast->ast);
     std::cout << global_var[sym_ast->token.get_name()] << std::endl;
 }
 
-// void Runner::run(IntAst *ast) { return; }
+void Runner::run(AddAst *ast) {
+    if (ast->get_type() == Integer) {
+        stack.push(dynamic_cast<IntAst *>(ast)->get_value());
+        return;
+    }
+    run(ast->left);
+    run(ast->right);
+    int right = stack.pop();
+    int left = stack.pop();
+    stack.push(left + right);
+}
+
+void Runner::run(IntAst *ast) { stack.push(ast->get_value()); }
+
+void Runner::run(SymbolAst *ast) {
+    std::string name = ast->token.get_name();
+    if (global_var.count(name) > 0)
+        stack.push(global_var[name]);
+    else
+        std::cerr << "Not defined symbol " + name << std::endl;
+}

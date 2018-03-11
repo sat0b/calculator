@@ -31,5 +31,13 @@ class IntAst : public Ast {
   public:
     Token token;
     IntAst(Token token);
+    int get_value();
+    virtual TokenKind get_type();
+};
+
+class AddAst : public Ast {
+  public:
+    Ast *left, *right;
+    AddAst(Ast *left, Ast *right);
     virtual TokenKind get_type();
 };

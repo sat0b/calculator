@@ -37,8 +37,8 @@ Parser::Parser(std::unique_ptr<Lexer> lexer) : lexer(std::move(lexer)) {}
 Ast *Parser::read_symbol_stat() {
     SymbolAst *sym = new SymbolAst(lexer->next_token());
     lexer->expect_skip(Assign);
-    IntAst *val = new IntAst(lexer->next_token());
-    return new AssignAst(sym, val);
+    Ast *expr = read_expr();
+    return new AssignAst(sym, expr);
 }
 
 void Parser::read_return_stat() { eval_expression(1); }
@@ -200,6 +200,27 @@ Ast *Parser::read_stat() {
     else
         parse_error("Syntax error");
     return nullptr;
+}
+
+Ast *Parser::read_expr() {
+    Ast *node = read_factor();
+    while (lexer->skip(Plus)) {
+        Ast *right = read_factor();
+        node = new AddAst(node, right);
+    }
+    return node;
+}
+
+Ast *Parser::read_factor() {
+    Token token = lexer->next_token();
+    switch (token.get_kind()) {
+    case Integer:
+        return new IntAst(token);
+    case Symbol:
+        return new SymbolAst(token);
+    default:
+        return nullptr;
+    }
 }
 
 void Parser::eval_expression(int priority) {
