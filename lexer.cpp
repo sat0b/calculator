@@ -102,6 +102,16 @@ bool Lexer::skip(TokenKind token_kind) {
     return true;
 }
 
+void Lexer::expect_skip(TokenKind token_kind) {
+    Token token = next_token();
+    if (token.get_kind() != token_kind) {
+        Token expect(token_kind);
+        std::cerr << "Syntax error, expected " << expect.get_name()
+                  << ", but got " << token.get_name() << std::endl;
+        std::exit(1);
+    }
+}
+
 bool Lexer::jump_block() {
     int count = 0;
     for (size_t pc = tkp; pc < tokens.size(); pc++) {
