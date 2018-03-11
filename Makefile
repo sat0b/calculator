@@ -2,7 +2,7 @@ CXXFLAGS := -std=c++14 -g -Wall
 CXX := clang++ $(CXXFLAGS)
 
 calculator: calculator.cpp token.o parser.o stack.o lexer.o ast.o runner.o
-	$(CXX) calculator.cpp token.o parser.o stack.o lexer.o ast.o -o calculator
+	$(CXX) calculator.cpp token.o parser.o stack.o lexer.o ast.o runner.o -o calculator
 
 token.o: token.cpp token.h
 	$(CXX) -c token.cpp

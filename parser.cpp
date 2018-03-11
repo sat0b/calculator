@@ -186,7 +186,7 @@ Ast *Parser::read_stat() {
     if (lexer->match(Symbol))
         return read_symbol_stat();
     else if (lexer->skip(Print))
-        read_print_stat();
+        return read_print_stat();
     else if (lexer->skip(Integer))
         read_numeric_stat();
     else if (lexer->skip(If))

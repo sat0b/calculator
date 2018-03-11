@@ -10,26 +10,26 @@ class SymbolAst : public Ast {
   public:
     Token token;
     SymbolAst(Token tk);
-    TokenKind get_type() { return Symbol; }
+    virtual TokenKind get_type();
 };
 
 class AssignAst : public Ast {
   public:
     Ast *dst, *src;
     AssignAst(Ast *, Ast *);
-    TokenKind get_type() { return Equal; }
+    virtual TokenKind get_type();
 };
 
 class PrintAst : public Ast {
   public:
     Ast *ast;
     PrintAst(Ast *);
-    TokenKind get_type() { return Print; }
+    virtual TokenKind get_type();
 };
 
 class IntAst : public Ast {
   public:
     Token token;
     IntAst(Token token);
-    TokenKind get_type() { return Integer; }
+    virtual TokenKind get_type();
 };
