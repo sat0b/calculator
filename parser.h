@@ -22,7 +22,7 @@ class Parser {
     int read_cond();
     Ast *read_stat();
     Ast *read_symbol_stat();
-    Ast *read_expr();
+    Ast *read_expr(int);
     Ast *read_factor();
     void read_return_stat();
     void read_function_call(std::string name);

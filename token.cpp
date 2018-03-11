@@ -8,7 +8,7 @@ namespace {
 std::map<std::string, TokenKind> token_table{
     {"+", Plus},
     {"-", Minus},
-    {"*", Minus},
+    {"*", Product},
     {"/", Divide},
     {"(", LeftBracket},
     {")", RightBracket},

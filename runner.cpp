@@ -11,19 +11,19 @@ void Runner::run() {
 void Runner::run(Ast *ast) {
     switch (ast->get_type()) {
     case Equal:
-        run((AssignAst *)ast);
+        run(dynamic_cast<AssignAst *>(ast));
         break;
     case Integer:
-        run((IntAst *)ast);
+        run(dynamic_cast<IntAst *>(ast));
         break;
     case Symbol:
-        run((SymbolAst *)ast);
+        run(dynamic_cast<SymbolAst *>(ast));
         break;
     case Print:
-        run((PrintAst *)ast);
+        run(dynamic_cast<PrintAst *>(ast));
         break;
     case Expr:
-        run((ExprAst *)ast);
+        run(dynamic_cast<ExprAst *>(ast));
         break;
     default:
         break;
@@ -31,7 +31,7 @@ void Runner::run(Ast *ast) {
 }
 
 void Runner::run(AssignAst *ast) {
-    SymbolAst *sym_ast = (SymbolAst *)ast->dst;
+    SymbolAst *sym_ast = dynamic_cast<SymbolAst *>(ast->dst);
     run(ast->src);
     global_var[sym_ast->token.get_name()] = stack.pop();
 }

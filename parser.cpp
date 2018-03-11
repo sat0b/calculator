@@ -37,7 +37,7 @@ Parser::Parser(std::unique_ptr<Lexer> lexer) : lexer(std::move(lexer)) {}
 Ast *Parser::read_symbol_stat() {
     SymbolAst *sym = new SymbolAst(lexer->next_token());
     lexer->expect_skip(Assign);
-    Ast *expr = read_expr();
+    Ast *expr = read_expr(1);
     return new AssignAst(sym, expr);
 }
 
@@ -202,11 +202,16 @@ Ast *Parser::read_stat() {
     return nullptr;
 }
 
-Ast *Parser::read_expr() {
-    Ast *node = read_factor();
-    while (lexer->match(Plus) || lexer->match(Minus)) {
+Ast *Parser::read_expr(int priority) {
+    if (priority > order_max)
+        return read_factor();
+    Ast *node = read_expr(priority + 1);
+    for (;;) {
+        TokenKind tk = lexer->read_token().get_kind();
+        if (priority != exp_order[tk])
+            break;
         Token op = lexer->next_token();
-        Ast *right = read_factor();
+        Ast *right = read_expr(priority + 1);
         node = new ExprAst(node, right, op);
     }
     return node;
