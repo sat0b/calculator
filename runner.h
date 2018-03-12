@@ -19,7 +19,6 @@ class Runner {
     void run(ExprAst *ast);
     void run(AssignAst *ast);
     void run(PrintAst *ast);
-    void run(AddAst *ast);
     void run(IntAst *ast);
     void run(SymbolAst *ast);
 };

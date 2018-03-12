@@ -14,9 +14,6 @@ TokenKind AssignAst::get_type() { return Equal; }
 PrintAst::PrintAst(Ast *_expr) : expr(_expr) {}
 TokenKind PrintAst::get_type() { return Print; }
 
-AddAst::AddAst(Ast *_left, Ast *_right) : left(_left), right(_right) {}
-TokenKind AddAst::get_type() { return Plus; }
-
 ExprAst::ExprAst(Ast *_left, Ast *_right, Token _token)
     : left(_left), right(_right), token(_token) {}
 TokenKind ExprAst::get_type() { return Expr; }
