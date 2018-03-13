@@ -35,17 +35,18 @@ class IntAst : public Ast {
     virtual TokenKind get_type();
 };
 
-class AddAst : public Ast {
-  public:
-    Ast *left, *right;
-    AddAst(Ast *left, Ast *right);
-    virtual TokenKind get_type();
-};
-
 class ExprAst : public Ast {
   public:
     Ast *left, *right;
     Token token;
     ExprAst(Ast *, Ast *, Token);
+    virtual TokenKind get_type();
+};
+
+class ForAst : public Ast {
+  public:
+    Ast *cond;
+    Ast *block;
+    ForAst(Ast *, Ast *);
     virtual TokenKind get_type();
 };
