@@ -154,16 +154,20 @@ Ast *Parser::read_print_stat() {
 //     }
 // }
 
-Ast *Parser::read_block() {
-    // TODO
-    return nullptr;
+std::vector<Ast *> Parser::read_block() {
+    std::vector<Ast *> astvec;
+    while (!lexer->skip(End)) {
+        Ast *ast = read_stat();
+        astvec.push_back(ast);
+    }
+    return astvec;
 }
 
 Ast *Parser::read_for() {
     lexer->expect_skip(LeftBracket);
     Ast *cond = read_expr(1);
     lexer->expect_skip(RightBracket);
-    Ast *block = read_block();
+    std::vector<Ast *> block = read_block();
     return new ForAst(cond, block);
 }
 
@@ -199,12 +203,12 @@ Ast *Parser::read_stat() {
         return read_symbol_stat();
     else if (lexer->skip(Print))
         return read_print_stat();
+    else if (lexer->skip(For))
+        return read_for();
     // else if (lexer->skip(Integer))
     //     read_numeric_stat();
     // else if (lexer->skip(If))
     //     read_if_stat();
-    // else if (lexer->skip(For))
-    //     read_for_stat();
     // else if (lexer->skip(Function))
     //     read_function_def();
     // else if (lexer->skip(Return))

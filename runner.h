@@ -21,4 +21,6 @@ class Runner {
     void run(PrintAst *ast);
     void run(IntAst *ast);
     void run(SymbolAst *ast);
+    void run(ForAst *ast);
+    void show_ast(std::vector<Ast *> ast);
 };

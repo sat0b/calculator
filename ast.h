@@ -22,7 +22,7 @@ class AssignAst : public Ast {
 
 class PrintAst : public Ast {
   public:
-    Ast *expr;
+    Ast *ast;
     PrintAst(Ast *);
     virtual TokenKind get_type();
 };
@@ -46,7 +46,7 @@ class ExprAst : public Ast {
 class ForAst : public Ast {
   public:
     Ast *cond;
-    Ast *block;
-    ForAst(Ast *, Ast *);
+    std::vector<Ast *> block;
+    ForAst(Ast *, std::vector<Ast *>);
     virtual TokenKind get_type();
 };

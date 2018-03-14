@@ -10,7 +10,7 @@ void Runner::run() {
 
 void Runner::run(Ast *ast) {
     switch (ast->get_type()) {
-    case Equal:
+    case Assign:
         run(dynamic_cast<AssignAst *>(ast));
         break;
     case Integer:
@@ -25,6 +25,9 @@ void Runner::run(Ast *ast) {
     case Expr:
         run(dynamic_cast<ExprAst *>(ast));
         break;
+    case For:
+        run(dynamic_cast<ForAst *>(ast));
+        break;
     default:
         break;
     }
@@ -37,18 +40,11 @@ void Runner::run(AssignAst *ast) {
 }
 
 void Runner::run(PrintAst *ast) {
-    if (ast->expr->get_type() == Symbol)
-        run(dynamic_cast<SymbolAst *>(ast->expr));
-    else if (ast->expr->get_type() == Expr)
-        run(dynamic_cast<ExprAst *>(ast->expr));
+    run(ast->ast);
     std::cout << stack.pop() << std::endl;
 }
 
 void Runner::run(ExprAst *ast) {
-    if (ast->get_type() == Integer) {
-        stack.push(dynamic_cast<IntAst *>(ast)->get_value());
-        return;
-    }
     run(ast->left);
     run(ast->right);
     stack.operate(ast->token.get_kind());
@@ -62,4 +58,14 @@ void Runner::run(SymbolAst *ast) {
         stack.push(global_var[name]);
     else
         std::cerr << "Name error, no such a variable " + name << std::endl;
+}
+
+void Runner::run(ForAst *ast) {
+    for (;;) {
+        run(ast->cond);
+        if (!stack.pop())
+            break;
+        for (Ast *stat : ast->block)
+            run(stat);
+    }
 }
