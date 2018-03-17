@@ -27,6 +27,8 @@ class Parser {
     Ast *read_block();
     Ast *read_for();
     Ast *read_if();
+    Ast *read_function_def();
+    Ast *read_return();
     // void read_return_stat();
     // void read_function_call(std::string name);
     // void read_block();

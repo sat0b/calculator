@@ -24,7 +24,7 @@ assert-equal test/nested_for.ca 150
 assert-equal test/if_true.ca 10
 assert-equal test/if_false.ca 5
 assert-equal test/if_elseif_else.ca 2
-# assert-equal test/func.ca 25
+assert-equal test/func.ca 25
 # assert-equal test/func_var_arg.ca 15
 # assert-equal test/hello.ca "Hello, world!"
 # assert-equal test/builtin.ca 5

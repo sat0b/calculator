@@ -34,6 +34,7 @@ enum TokenKind {
     Break,
     Return,
     Function,
+    FunctionDef,
     String,
     Block,
     Expr,

@@ -10,6 +10,9 @@ class Runner {
   private:
     std::vector<Ast *> astvec;
     std::map<std::string, int> global_var;
+    std::map<std::string, int> local_var;
+    std::stack<std::map<std::string, int>> scope;
+    std::map<std::string, FunctionDefAst *> function_table;
     Stack stack;
 
   public:
@@ -23,5 +26,8 @@ class Runner {
     void run(SymbolAst *ast);
     void run(ForAst *ast);
     void run(IfAst *ast);
+    void run(FunctionDefAst *ast);
+    void run(FunctionAst *ast);
+    void run(ReturnAst *ast);
     void show_ast(std::vector<Ast *> ast);
 };

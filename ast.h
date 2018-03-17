@@ -67,3 +67,28 @@ class IfAst : public Ast {
     IfAst(Ast *, Ast *);
     virtual TokenKind get_type();
 };
+
+class FunctionDefAst : public Ast {
+  public:
+    std::string func_name;
+    std::vector<std::string> args;
+    std::vector<Ast *> stats;
+    FunctionDefAst(std::string func_name, std::vector<std::string> args,
+                   std::vector<Ast *> stats);
+    virtual TokenKind get_type();
+};
+
+class FunctionAst : public Ast {
+  public:
+    std::vector<int> args;
+    std::string func_name;
+    FunctionAst(std::string func_name, std::vector<int> args);
+    virtual TokenKind get_type();
+};
+
+class ReturnAst : public Ast {
+  public:
+    Ast *expr;
+    ReturnAst(Ast *expr);
+    virtual TokenKind get_type();
+};

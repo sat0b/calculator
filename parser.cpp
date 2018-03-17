@@ -89,26 +89,10 @@ Ast *Parser::read_symbol_stat() {
 //     lexer->jump_addr(ret_addr);
 // }
 
-// void Parser::read_print_stat() {
-//     if (lexer->match(String)) {
-//         std::cout << lexer->next_token().get_name() << std::endl;
-//     }
-//     if (lexer->match(Symbol) || lexer->match(Integer)) {
-//         eval_expression(1);
-//         if (stack.exist())
-//             std::cout << stack.pop() << std::endl;
-//     }
-// }
-
 Ast *Parser::read_print_stat() {
     Ast *expr = read_expr(1);
     return new PrintAst(expr);
 }
-
-// void Parser::read_numeric_stat() {
-//     eval_expression(1);
-//     std::cout << stack.pop() << std::endl;
-// }
 
 Ast *Parser::read_block() {
     std::vector<Ast *> astvec;
@@ -147,14 +131,31 @@ Ast *Parser::read_if() {
     return new IfAst(cond, then_block);
 }
 
-// // Function definition
-// void Parser::read_function_def() {
-//     Token token = lexer->next_token();
-//     std::string name = token.get_name();
-//     functions[name] = lexer->get_addr();
-//     lexer->jump_block();
-//     lexer->skip(End);
-// }
+Ast *Parser::read_function_def() {
+    Token func_token = lexer->next_token();
+    std::string func_name = func_token.get_name();
+    lexer->expect_skip(LeftBracket);
+    std::vector<std::string> args;
+    for (;;) {
+        Token arg_token = lexer->next_token();
+        std::string arg_name = arg_token.get_name();
+        args.push_back(arg_name);
+        if (lexer->skip(RightBracket))
+            break;
+        lexer->expect_skip(Comma);
+    }
+    std::vector<Ast *> stats;
+    while (!lexer->skip(End)) {
+        Ast *stat = read_stat();
+        stats.push_back(stat);
+    }
+    return new FunctionDefAst(func_name, args, stats);
+}
+
+Ast *Parser::read_return() {
+    Ast *expr = read_expr(1);
+    return new ReturnAst(expr);
+}
 
 Ast *Parser::read_stat() {
     if (lexer->match(Symbol))
@@ -165,15 +166,11 @@ Ast *Parser::read_stat() {
         return read_for();
     if (lexer->skip(If))
         return read_if();
-    // else if (lexer->skip(Integer))
-    //     read_numeric_stat();
-    // else if (lexer->skip(Function))
-    //     read_function_def();
-    // else if (lexer->skip(Return))
-    //     read_return_stat();
-    else
-        parse_error("Syntax error");
-    return nullptr;
+    if (lexer->skip(Function))
+        return read_function_def();
+    if (lexer->skip(Return))
+        return read_return();
+    parse_error("Syntax error");
 }
 
 Ast *Parser::read_expr(int priority) {
@@ -196,8 +193,22 @@ Ast *Parser::read_factor() {
     switch (token.get_kind()) {
     case Integer:
         return new IntAst(token);
-    case Symbol:
+    case Symbol: {
+        if (lexer->skip(LeftBracket)) {
+            std::string func_name = token.get_name();
+            std::vector<int> args;
+            for (;;) {
+                Token arg = lexer->next_token();
+                args.push_back(arg.get_value());
+                if (lexer->skip(RightBracket))
+                    break;
+                lexer->expect_skip(Comma);
+            }
+
+            return new FunctionAst(func_name, args);
+        }
         return new SymbolAst(token);
+    }
     case LeftBracket: {
         Ast *ast = read_expr(1);
         lexer->expect_skip(RightBracket);
