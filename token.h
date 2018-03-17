@@ -1,5 +1,5 @@
 #pragma once
-
+#include <map>
 #include <string>
 #include <vector>
 
@@ -42,12 +42,13 @@ enum TokenKind {
 
 class Token {
   private:
+    static std::map<std::string, TokenKind> token_table;
     TokenKind kind;
     std::string token;
     TokenKind get_token_kind(const std::string &token) const;
 
   public:
-    Token();
+    Token() = default;
     explicit Token(std::string str);
     explicit Token(TokenKind kind);
     Token(std::string str, TokenKind token_kind);

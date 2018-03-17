@@ -1,11 +1,7 @@
 #include "token.h"
-#include <algorithm>
 #include <iostream>
-#include <map>
-#include <string>
 
-namespace {
-std::map<std::string, TokenKind> token_table{
+std::map<std::string, TokenKind> Token::token_table{
     {"+", Plus},
     {"-", Minus},
     {"*", Product},
@@ -34,7 +30,6 @@ std::map<std::string, TokenKind> token_table{
     {",", Comma},
     {"end", End},
 };
-}
 
 TokenKind Token::get_token_kind(const std::string &token) const {
     if (all_of(token.cbegin(), token.cend(), isdigit))
@@ -44,10 +39,8 @@ TokenKind Token::get_token_kind(const std::string &token) const {
     return Symbol;
 }
 
-Token::Token() {}
-
 Token::Token(std::string str, TokenKind token_kind)
-    : token(str), kind(token_kind) {}
+    : token(std::move(str)), kind(token_kind) {}
 
 Token::Token(std::string str) {
     this->kind = get_token_kind(str);

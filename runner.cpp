@@ -1,7 +1,6 @@
 #include "runner.h"
-#include <iostream>
 
-Runner::Runner(std::vector<Ast *> _astvec) : astvec(_astvec) {}
+Runner::Runner(std::vector<Ast *> _astvec) : astvec(std::move(_astvec)) {}
 
 void Runner::run() {
     for (Ast *ast : astvec)
@@ -50,7 +49,7 @@ void Runner::run(Ast *ast) {
 }
 
 void Runner::run(AssignAst *ast) {
-    SymbolAst *sym_ast = dynamic_cast<SymbolAst *>(ast->dst);
+    auto sym_ast = dynamic_cast<SymbolAst *>(ast->dst);
     run(ast->src);
     global_var[sym_ast->token.get_name()] = stack.pop();
 }

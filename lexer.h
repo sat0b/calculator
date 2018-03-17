@@ -17,19 +17,13 @@ class Lexer {
     Token read_operator();
     Token read_identifier();
     Token read_str();
-    Token read_keyword();
-    Token read_end();
     Token lex();
 
   public:
-    Lexer(const std::string &code);
+    explicit Lexer(const std::string &code);
     Token next_token();
     Token read_token();
     bool skip(TokenKind token_kind);
     void expect_skip(TokenKind token_kind);
     bool match(TokenKind token_kind);
-    size_t get_addr();
-    void jump_addr(size_t addr);
-    bool jump_block();
-    bool jump_end_for();
 };

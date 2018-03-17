@@ -10,7 +10,7 @@ Lexer::Lexer(const std::string &code) : code_(code) {
         if (token.get_kind() == CodeEnd)
             break;
     }
-    // Initalize token position tkp
+    // Initialize token position tkp
     tkp = 0;
 }
 
@@ -111,69 +111,6 @@ void Lexer::expect_skip(TokenKind token_kind) {
         std::exit(1);
     }
 }
-
-bool Lexer::jump_block() {
-    int count = 0;
-    for (size_t pc = tkp; pc < tokens.size(); pc++) {
-        TokenKind kind = tokens[pc].get_kind();
-        if (count == 0) {
-            if (kind == End || kind == ElseIf || kind == Else) {
-                tkp = pc;
-                return true;
-            }
-        }
-        if (kind == For || kind == If)
-            count++;
-        else if (kind == End)
-            count--;
-    }
-    return false;
-}
-
-bool Lexer::jump_end_for() {
-    int n_skip = 0;
-    int invalid_block = 0;
-    for (int pc = tkp; pc >= 0; pc--) {
-        TokenKind kind = tokens[pc].get_kind();
-        if (invalid_block == 0) {
-            if (kind == For) {
-                break;
-            } else if (kind == If) {
-                n_skip++;
-                continue;
-            }
-        } else {
-            if (kind == For || kind == If)
-                invalid_block--;
-        }
-        if (kind == End)
-            invalid_block++;
-    }
-    invalid_block = 0;
-    for (int pc = tkp; pc < tokens.size(); pc++) {
-        TokenKind kind = tokens[pc].get_kind();
-        if (invalid_block == 0) {
-            if (kind == End) {
-                if (n_skip > 0) {
-                    n_skip--;
-                } else if (n_skip == 0) {
-                    tkp = pc;
-                    return true;
-                }
-            }
-        } else {
-            if (kind == End)
-                invalid_block--;
-        }
-        if (kind == For || kind == If)
-            invalid_block++;
-    }
-    return false;
-}
-
-size_t Lexer::get_addr() { return tkp; }
-
-void Lexer::jump_addr(size_t addr) { tkp = addr; }
 
 bool Lexer::match(TokenKind token_kind) {
     Token token = read_token();

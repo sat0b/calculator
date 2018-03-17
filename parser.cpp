@@ -1,24 +1,13 @@
 #include "parser.h"
-#include "ast.h"
-#include "lexer.h"
-#include "token.h"
-#include <cstdlib>
 #include <iostream>
-#include <memory>
 #include <numeric>
 
-namespace {
-
-std::map<TokenKind, int> exp_order{
+std::map<TokenKind, int> Parser::exp_order{
     {Or, 1},       {And, 2},       {Equal, 3},       {NotEqual, 3},
     {LessThan, 4}, {LessEqual, 4}, {GreaterThan, 4}, {GreaterEqual, 4},
     {Plus, 5},     {Minus, 5},     {Product, 6},     {Divide, 6},
     {Mod, 6},
 };
-
-const int order_max = 6;
-
-} // namespace
 
 Parser::Parser(std::unique_ptr<Lexer> lexer) : lexer(std::move(lexer)) {}
 
@@ -161,7 +150,6 @@ Ast *Parser::read_factor() {
 }
 
 std::vector<Ast *> Parser::parse() {
-    stack.clear();
     std::vector<Ast *> astvec;
     while (!lexer->match(CodeEnd)) {
         Ast *ast = read_stat();
