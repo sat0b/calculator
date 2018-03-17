@@ -9,30 +9,30 @@ class Ast {
 class SymbolAst : public Ast {
   public:
     Token token;
-    SymbolAst(Token tk);
-    virtual TokenKind get_type();
+    explicit SymbolAst(Token tk);
+    TokenKind get_type() override;
 };
 
 class AssignAst : public Ast {
   public:
     Ast *dst, *src;
     AssignAst(Ast *, Ast *);
-    virtual TokenKind get_type();
+    TokenKind get_type() override;
 };
 
 class PrintAst : public Ast {
   public:
     Ast *ast;
-    PrintAst(Ast *);
-    virtual TokenKind get_type();
+    explicit PrintAst(Ast *);
+    TokenKind get_type() override;
 };
 
 class IntAst : public Ast {
   public:
     Token token;
-    IntAst(Token token);
+    explicit IntAst(Token token);
     int get_value();
-    virtual TokenKind get_type();
+    TokenKind get_type() override;
 };
 
 class ExprAst : public Ast {
@@ -40,7 +40,7 @@ class ExprAst : public Ast {
     Ast *left, *right;
     Token token;
     ExprAst(Ast *, Ast *, Token);
-    virtual TokenKind get_type();
+    TokenKind get_type() override;
 };
 
 class ForAst : public Ast {
@@ -48,14 +48,14 @@ class ForAst : public Ast {
     Ast *cond;
     Ast *block;
     ForAst(Ast *, Ast *);
-    virtual TokenKind get_type();
+    TokenKind get_type() override;
 };
 
 class BlockAst : public Ast {
   public:
     std::vector<Ast *> stats;
-    BlockAst(std::vector<Ast *>);
-    virtual TokenKind get_type();
+    explicit BlockAst(std::vector<Ast *>);
+    TokenKind get_type() override;
 };
 
 class IfAst : public Ast {
@@ -65,7 +65,7 @@ class IfAst : public Ast {
     Ast *else_block;
     IfAst(Ast *, Ast *, Ast *);
     IfAst(Ast *, Ast *);
-    virtual TokenKind get_type();
+    TokenKind get_type() override;
 };
 
 class FunctionDefAst : public Ast {
@@ -75,7 +75,7 @@ class FunctionDefAst : public Ast {
     std::vector<Ast *> stats;
     FunctionDefAst(std::string func_name, std::vector<std::string> args,
                    std::vector<Ast *> stats);
-    virtual TokenKind get_type();
+    TokenKind get_type() override;
 };
 
 class FunctionAst : public Ast {
@@ -83,12 +83,12 @@ class FunctionAst : public Ast {
     std::vector<int> args;
     std::string func_name;
     FunctionAst(std::string func_name, std::vector<int> args);
-    virtual TokenKind get_type();
+    TokenKind get_type() override;
 };
 
 class ReturnAst : public Ast {
   public:
     Ast *expr;
-    ReturnAst(Ast *expr);
-    virtual TokenKind get_type();
+    explicit ReturnAst(Ast *expr);
+    TokenKind get_type() override;
 };

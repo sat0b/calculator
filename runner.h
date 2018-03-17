@@ -16,7 +16,7 @@ class Runner {
     Stack stack;
 
   public:
-    Runner(std::vector<Ast *> _astvec);
+    explicit Runner(std::vector<Ast *> _astvec);
     void run();
     void run(Ast *ast);
     void run(ExprAst *ast);
@@ -29,5 +29,4 @@ class Runner {
     void run(FunctionDefAst *ast);
     void run(FunctionAst *ast);
     void run(ReturnAst *ast);
-    void show_ast(std::vector<Ast *> ast);
 };

@@ -70,7 +70,7 @@ void Runner::run(IntAst *ast) { stack.push(ast->get_value()); }
 
 void Runner::run(SymbolAst *ast) {
     std::string name = ast->token.get_name();
-    if (scope.size() > 0) {
+    if (!scope.empty()) {
         std::map<std::string, int> local_var = scope.top();
         if (local_var.count(name) > 0) {
             stack.push(local_var[name]);
@@ -107,7 +107,8 @@ void Runner::run(FunctionAst *ast) {
     std::vector<int> args_value = ast->args;
     FunctionDefAst *func_ast = function_table[func_name];
     if (args_value.size() != func_ast->args.size())
-        std::cerr << "Syntax error, the number of arguments do not match" << std::endl;
+        std::cerr << "Syntax error, the number of arguments do not match"
+                  << std::endl;
     for (int i = 0; i < args_value.size(); i++)
         local_var[func_ast->args[i]] = args_value[i];
     scope.push(local_var);

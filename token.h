@@ -12,7 +12,6 @@ enum TokenKind {
     Minus,
     LeftBracket,
     RightBracket,
-    Variable,
     Assign,
     Print,
     And,
@@ -49,9 +48,9 @@ class Token {
 
   public:
     Token();
-    Token(std::string str);
+    explicit Token(std::string str);
+    explicit Token(TokenKind kind);
     Token(std::string str, TokenKind token_kind);
-    Token(TokenKind kind);
     TokenKind get_kind() const;
     int get_value() const;
     std::string get_name() const;

@@ -22,72 +22,12 @@ const int order_max = 6;
 
 Parser::Parser(std::unique_ptr<Lexer> lexer) : lexer(std::move(lexer)) {}
 
-// void Parser::read_symbol_stat() {
-//     Token token = lexer->next_token();
-//     std::string name = token.get_name();
-//     // Assign statement
-//     if (lexer->skip(Assign)) {
-//         eval_expression(1);
-//         global_var[name] = stack.pop();
-//     } else if (lexer->skip(Return)) {
-//         eval_expression(1);
-//     }
-// }
-
 Ast *Parser::read_symbol_stat() {
     SymbolAst *sym = new SymbolAst(lexer->next_token());
     lexer->expect_skip(Assign);
     Ast *expr = read_expr(1);
     return new AssignAst(sym, expr);
 }
-
-// void Parser::read_return_stat() { eval_expression(1); }
-
-// void Parser::call_function(std::string name, std::vector<int> args) {
-//     if (name == "max") {
-//         int max = *std::max_element(args.begin(), args.end());
-//         stack.push(max);
-//     } else if (name == "min") {
-//         int min = *std::min_element(args.begin(), args.end());
-//         stack.push(min);
-//     } else if (name == "sum") {
-//         int sum = std::accumulate(args.begin(), args.end(), 0);
-//         stack.push(sum);
-//     }
-// }
-
-// void Parser::read_function_call(std::string name) {
-//     std::vector<int> vargs;
-//     while (!lexer->skip(RightBracket)) {
-//         eval_expression(1);
-//         int value = stack.pop();
-//         lexer->skip(Comma);
-//         vargs.push_back(value);
-//     }
-//     if (std::count(builtins.begin(), builtins.end(), name) > 0) {
-//         Parser::call_function(name, vargs);
-//         return;
-//     }
-//     if (functions.count(name) == 0)
-//         parse_error("Name error, not defined function " + name);
-//     size_t ret_addr = lexer->get_addr();
-//     // Process in function
-//     lexer->jump_addr(functions[name]);
-//     lexer->skip(LeftBracket);
-//     std::map<std::string, int> args;
-//     int i = 0;
-//     while (!lexer->skip(RightBracket)) {
-//         std::string value_name = lexer->next_token().get_name();
-//         args[value_name] = vargs[i];
-//         lexer->skip(Comma);
-//         i++;
-//     }
-//     local_var.push(args);
-//     while (!lexer->skip(End))
-//         read_stat();
-//     local_var.pop();
-//     lexer->jump_addr(ret_addr);
-// }
 
 Ast *Parser::read_print_stat() {
     Ast *expr = read_expr(1);
@@ -171,6 +111,7 @@ Ast *Parser::read_stat() {
     if (lexer->skip(Return))
         return read_return();
     parse_error("Syntax error");
+    return nullptr;
 }
 
 Ast *Parser::read_expr(int priority) {
@@ -218,55 +159,6 @@ Ast *Parser::read_factor() {
         return nullptr;
     }
 }
-
-// void Parser::eval_expression(int priority) {
-//     if (priority > order_max)
-//         return eval_factor();
-//     eval_expression(priority + 1);
-//     for (;;) {
-//         TokenKind tk = lexer->read_token().get_kind();
-//         if (priority != exp_order[tk])
-//             return;
-//         TokenKind op = lexer->next_token().get_kind();
-//         eval_expression(priority + 1);
-//         stack.operate(op);
-//     }
-// }
-
-// void Parser::eval_factor() {
-//     Token token = lexer->next_token();
-//     switch (token.get_kind()) {
-//     case Integer:
-//         stack.push(token.get_value());
-//         break;
-//     case Symbol: {
-//         std::string name = token.get_name();
-//         // Load argments
-//         std::map<std::string, int> args;
-//         if (local_var.size() > 0)
-//             args = local_var.top();
-//         // Function call
-//         if (lexer->skip(LeftBracket)) {
-//             read_function_call(name);
-//             return;
-//         }
-//         if (args.count(name) > 0)
-//             stack.push(args[name]);
-//         else if (global_var.count(name) > 0)
-//             stack.push(global_var[name]);
-//         else
-//             parse_error("Name error, no such a variable " +
-//             token.get_name());
-//         break;
-//     }
-//     case LeftBracket:
-//         eval_expression(1);
-//         lexer->skip(RightBracket);
-//         break;
-//     default:
-//         break;
-//     }
-// }
 
 std::vector<Ast *> Parser::parse() {
     stack.clear();
