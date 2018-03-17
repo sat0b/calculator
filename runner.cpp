@@ -28,6 +28,9 @@ void Runner::run(Ast *ast) {
     case For:
         run(dynamic_cast<ForAst *>(ast));
         break;
+    case If:
+        run(dynamic_cast<IfAst *>(ast));
+        break;
     case Block:
         for (Ast *stat : dynamic_cast<BlockAst *>(ast)->stats)
             run(stat);
@@ -71,4 +74,12 @@ void Runner::run(ForAst *ast) {
             break;
         run(ast->block);
     }
+}
+
+void Runner::run(IfAst *ast) {
+    run(ast->cond);
+    if (stack.pop())
+        run(ast->then_block);
+    else
+        run(ast->else_block);
 }

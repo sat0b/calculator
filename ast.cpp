@@ -23,3 +23,9 @@ TokenKind ForAst::get_type() { return For; }
 
 BlockAst::BlockAst(std::vector<Ast *> _stats) : stats(_stats) {}
 TokenKind BlockAst::get_type() { return Block; }
+
+IfAst::IfAst(Ast *_cond, Ast *_then_block, Ast *_else_block)
+    : cond(_cond), then_block(_then_block), else_block(_else_block) {}
+IfAst::IfAst(Ast *_cond, Ast *_then_block)
+    : cond(_cond), then_block(_then_block) {}
+TokenKind IfAst::get_type() { return If; }

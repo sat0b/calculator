@@ -57,3 +57,13 @@ class BlockAst : public Ast {
     BlockAst(std::vector<Ast *>);
     virtual TokenKind get_type();
 };
+
+class IfAst : public Ast {
+  public:
+    Ast *cond;
+    Ast *then_block;
+    Ast *else_block;
+    IfAst(Ast *, Ast *, Ast *);
+    IfAst(Ast *, Ast *);
+    virtual TokenKind get_type();
+};

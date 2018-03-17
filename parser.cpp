@@ -110,54 +110,12 @@ Ast *Parser::read_print_stat() {
 //     std::cout << stack.pop() << std::endl;
 // }
 
-// int Parser::read_cond() {
-//     lexer->skip(LeftBracket);
-//     eval_expression(1);
-//     lexer->skip(RightBracket);
-//     return stack.pop();
-// }
-
-// void Parser::read_for_stat() {
-//     for (;;) {
-//         size_t loop_back = lexer->get_addr();
-//         if (read_cond()) {
-//             read_block();
-//             if (break_flg) {
-//                 break_flg = false;
-//                 return;
-//             }
-//             lexer->jump_addr(loop_back);
-//         } else {
-//             lexer->jump_block();
-//             lexer->skip(End);
-//             return;
-//         }
-//     }
-// }
-
-// void Parser::read_block() {
-//     for (;;) {
-//         while (lexer->skip(ElseIf) || lexer->skip(Else))
-//             lexer->jump_block();
-//         if (lexer->skip(End))
-//             return;
-//         if (lexer->skip(Return)) {
-//             read_return_stat();
-//             return;
-//         }
-//         if (lexer->match(Break)) {
-//             lexer->jump_end_for();
-//             break_flg = true;
-//             return;
-//         }
-//         read_stat();
-//     }
-// }
-
 Ast *Parser::read_block() {
     std::vector<Ast *> astvec;
     for (;;) {
         if (lexer->skip(End))
+            break;
+        if (lexer->match(ElseIf) || lexer->match(Else))
             break;
         Ast *ast = read_stat();
         astvec.push_back(ast);
@@ -173,23 +131,21 @@ Ast *Parser::read_for() {
     return new ForAst(cond, block);
 }
 
-// void Parser::read_if_stat() {
-//     if (read_cond()) {
-//         read_block();
-//         return;
-//     }
-//     while (lexer->jump_block()) {
-//         if (lexer->skip(ElseIf)) {
-//             read_if_stat();
-//             return;
-//         } else if (lexer->skip(Else)) {
-//             read_block();
-//             return;
-//         } else if (lexer->skip(End)) {
-//             return;
-//         }
-//     }
-// }
+Ast *Parser::read_if() {
+    lexer->expect_skip(LeftBracket);
+    Ast *cond = read_expr(1);
+    lexer->expect_skip(RightBracket);
+    Ast *then_block = read_block();
+    if (lexer->skip(ElseIf)) {
+        Ast *elseif_block = read_if();
+        return new IfAst(cond, then_block, elseif_block);
+    }
+    if (lexer->skip(Else)) {
+        Ast *else_block = read_block();
+        return new IfAst(cond, then_block, else_block);
+    }
+    return new IfAst(cond, then_block);
+}
 
 // // Function definition
 // void Parser::read_function_def() {
@@ -203,16 +159,14 @@ Ast *Parser::read_for() {
 Ast *Parser::read_stat() {
     if (lexer->match(Symbol))
         return read_symbol_stat();
-    else if (lexer->skip(Print))
+    if (lexer->skip(Print))
         return read_print_stat();
-    else if (lexer->skip(For))
+    if (lexer->skip(For))
         return read_for();
-    // else if (lexer->skip(If))
-    //     return read_if();
+    if (lexer->skip(If))
+        return read_if();
     // else if (lexer->skip(Integer))
     //     read_numeric_stat();
-    // else if (lexer->skip(If))
-    //     read_if_stat();
     // else if (lexer->skip(Function))
     //     read_function_def();
     // else if (lexer->skip(Return))
