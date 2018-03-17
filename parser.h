@@ -24,8 +24,9 @@ class Parser {
     Ast *read_symbol_stat();
     Ast *read_expr(int);
     Ast *read_factor();
-    std::vector<Ast *> read_block();
+    Ast *read_block();
     Ast *read_for();
+    Ast *read_if();
     // void read_return_stat();
     // void read_function_call(std::string name);
     // void read_block();

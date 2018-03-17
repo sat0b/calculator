@@ -18,6 +18,8 @@ ExprAst::ExprAst(Ast *_left, Ast *_right, Token _token)
     : left(_left), right(_right), token(_token) {}
 TokenKind ExprAst::get_type() { return Expr; }
 
-ForAst::ForAst(Ast *_cond, std::vector<Ast *> _block)
-    : cond(_cond), block(_block) {}
+ForAst::ForAst(Ast *_cond, Ast *_block) : cond(_cond), block(_block) {}
 TokenKind ForAst::get_type() { return For; }
+
+BlockAst::BlockAst(std::vector<Ast *> _stats) : stats(_stats) {}
+TokenKind BlockAst::get_type() { return Block; }

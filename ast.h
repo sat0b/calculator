@@ -46,7 +46,14 @@ class ExprAst : public Ast {
 class ForAst : public Ast {
   public:
     Ast *cond;
-    std::vector<Ast *> block;
-    ForAst(Ast *, std::vector<Ast *>);
+    Ast *block;
+    ForAst(Ast *, Ast *);
+    virtual TokenKind get_type();
+};
+
+class BlockAst : public Ast {
+  public:
+    std::vector<Ast *> stats;
+    BlockAst(std::vector<Ast *>);
     virtual TokenKind get_type();
 };

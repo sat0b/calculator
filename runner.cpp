@@ -28,6 +28,10 @@ void Runner::run(Ast *ast) {
     case For:
         run(dynamic_cast<ForAst *>(ast));
         break;
+    case Block:
+        for (Ast *stat : dynamic_cast<BlockAst *>(ast)->stats)
+            run(stat);
+        break;
     default:
         break;
     }
@@ -65,7 +69,6 @@ void Runner::run(ForAst *ast) {
         run(ast->cond);
         if (!stack.pop())
             break;
-        for (Ast *stat : ast->block)
-            run(stat);
+        run(ast->block);
     }
 }

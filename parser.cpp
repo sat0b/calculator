@@ -154,20 +154,22 @@ Ast *Parser::read_print_stat() {
 //     }
 // }
 
-std::vector<Ast *> Parser::read_block() {
+Ast *Parser::read_block() {
     std::vector<Ast *> astvec;
-    while (!lexer->skip(End)) {
+    for (;;) {
+        if (lexer->skip(End))
+            break;
         Ast *ast = read_stat();
         astvec.push_back(ast);
     }
-    return astvec;
+    return new BlockAst(astvec);
 }
 
 Ast *Parser::read_for() {
     lexer->expect_skip(LeftBracket);
     Ast *cond = read_expr(1);
     lexer->expect_skip(RightBracket);
-    std::vector<Ast *> block = read_block();
+    Ast *block = read_block();
     return new ForAst(cond, block);
 }
 
@@ -205,6 +207,8 @@ Ast *Parser::read_stat() {
         return read_print_stat();
     else if (lexer->skip(For))
         return read_for();
+    // else if (lexer->skip(If))
+    //     return read_if();
     // else if (lexer->skip(Integer))
     //     read_numeric_stat();
     // else if (lexer->skip(If))
