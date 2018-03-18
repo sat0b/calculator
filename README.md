@@ -1,2 +1,2 @@
 # Calculator
-Calculator is a interpreter for toy programing language.
+Calculator is a toy interpreter.
