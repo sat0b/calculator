@@ -59,7 +59,7 @@ void Runner::run(AssignAst *ast) {
 
 void Runner::run(PrintAst *print_ast) {
     if (print_ast->ast->get_type() == String) {
-        auto str = dynamic_cast<StringAst*>(print_ast->ast);
+        auto str = dynamic_cast<StringAst *>(print_ast->ast);
         std::cout << str->token.get_name() << std::endl;
     } else {
         run(print_ast->ast);
@@ -75,7 +75,7 @@ void Runner::run(ExprAst *ast) {
 
 void Runner::run(IntAst *ast) { stack.push(ast->get_value()); }
 
-void Runner::run(StringAst *ast) { }
+void Runner::run(StringAst *ast) {}
 
 void Runner::run(SymbolAst *ast) {
     std::string name = ast->token.get_name();

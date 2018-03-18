@@ -36,7 +36,7 @@ class IntAst : public Ast {
 };
 
 class StringAst : public Ast {
-public:
+  public:
     Token token;
     explicit StringAst(Token token);
     TokenKind get_type() override;
