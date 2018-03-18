@@ -13,7 +13,8 @@ class Runner {
     std::map<std::string, int> local_var;
     std::stack<std::map<std::string, int>> scope;
     std::map<std::string, FunctionDefAst *> function_table;
-    std::map<std::string, std::function<int(std::vector<Ast *>)>> builtin_function_table;
+    std::map<std::string, std::function<int(std::vector<Ast *>)>>
+        builtin_function_table;
     Stack stack;
 
   public:
