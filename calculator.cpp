@@ -1,17 +1,8 @@
 #include "ast.h"
 #include "parser.h"
 #include "runner.h"
-#include "token.h"
-#include <algorithm>
-#include <cassert>
-#include <cctype>
 #include <fstream>
-#include <iostream>
-#include <istream>
-#include <map>
-#include <memory>
 #include <sstream>
-#include <vector>
 
 void run(const std::string &file_name) {
     std::ifstream ifs(file_name);
@@ -35,9 +26,7 @@ void run(const std::string &file_name) {
 }
 
 int main(int argc, char **argv) {
-    if (argc == 1) {
-        // repl();
-    } else if (argc == 2) {
+    if (argc == 2) {
         const std::string file_name = std::string(argv[1]);
         run(file_name);
     }
