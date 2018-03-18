@@ -120,6 +120,4 @@ bool Lexer::match(TokenKind token_kind, int offset) {
     return false;
 }
 
-bool Lexer::match(TokenKind token_kind) {
-    return match(token_kind, 0);
-}
+bool Lexer::match(TokenKind token_kind) { return match(token_kind, 0); }
