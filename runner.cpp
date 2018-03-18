@@ -131,10 +131,8 @@ void Runner::run(ForAst *ast) {
         std::map<std::string, int> local_var;
         SymbolAst *val = ast->val;
         for (int i = ast->begin; i <= ast->end; ++i) {
-            local_var[val->token.get_name()] = i;
-            scope.push(local_var);
+            global_var[val->token.get_name()] = i;
             run(ast->block);
-            scope.pop();
         }
     }
     // condition based for loop
