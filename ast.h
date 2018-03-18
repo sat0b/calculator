@@ -54,7 +54,12 @@ class ForAst : public Ast {
   public:
     Ast *cond;
     Ast *block;
-    ForAst(Ast *, Ast *);
+    bool range_loop;
+    int begin;
+    int end;
+    SymbolAst *val;
+    ForAst(Ast *cond, Ast *block);
+    ForAst(SymbolAst *val, int begin, int end, Ast *block);
     TokenKind get_type() override;
 };
 

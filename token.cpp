@@ -27,6 +27,7 @@ std::map<std::string, TokenKind> Token::token_table{
     {"break", Break},
     {"return", Return},
     {"function", Function},
+    {"to", To},
     {",", Comma},
     {"end", End},
 };

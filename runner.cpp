@@ -126,11 +126,25 @@ void Runner::run(SymbolAst *ast) {
 }
 
 void Runner::run(ForAst *ast) {
-    for (;;) {
-        run(ast->cond);
-        if (!stack.pop())
-            break;
-        run(ast->block);
+    // range based for loop
+    if (ast->range_loop) {
+        std::map<std::string, int> local_var;
+        SymbolAst *val = ast->val;
+        for (int i = ast->begin; i <= ast->end; ++i) {
+            local_var[val->token.get_name()] = i;
+            scope.push(local_var);
+            run(ast->block);
+            scope.pop();
+        }
+    }
+    // condition based for loop
+    else {
+        for (;;) {
+            run(ast->cond);
+            if (!stack.pop())
+                break;
+            run(ast->block);
+        }
     }
 }
 
@@ -157,6 +171,7 @@ void Runner::run(FunctionAst *ast) {
     if (args_value.size() != func_ast->args.size())
         std::cerr << "Syntax error, the number of arguments do not match"
                   << std::endl;
+    std::map<std::string, int> local_var;
     for (int i = 0; i < args_value.size(); i++) {
         run(args_value[i]);
         int arg_value = stack.pop();

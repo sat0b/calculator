@@ -44,10 +44,26 @@ Ast *Parser::read_block() {
 
 Ast *Parser::read_for() {
     lexer->expect_skip(LeftBracket);
-    Ast *cond = read_expr(1);
-    lexer->expect_skip(RightBracket);
-    Ast *block = read_block();
-    return new ForAst(cond, block);
+    // Range for loop
+    if (lexer->match(Symbol, 0) && lexer->match(Assign, 1) &&
+        lexer->match(Integer, 2) && lexer->match(To, 3) &&
+        lexer->match(Integer, 4)) {
+        auto val = new SymbolAst(lexer->next_token());
+        lexer->expect_skip(Assign);
+        int begin = lexer->next_token().get_value();
+        lexer->expect_skip(To);
+        int end = lexer->next_token().get_value();
+        lexer->expect_skip(RightBracket);
+        Ast *block = read_block();
+        return new ForAst(val, begin, end, block);
+    }
+    // Condition based for loop
+    else {
+        Ast *cond = read_expr(1);
+        lexer->expect_skip(RightBracket);
+        Ast *block = read_block();
+        return new ForAst(cond, block);
+    }
 }
 
 Ast *Parser::read_if() {

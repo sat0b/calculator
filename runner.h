@@ -10,7 +10,6 @@ class Runner {
   private:
     std::vector<Ast *> astvec;
     std::map<std::string, int> global_var;
-    std::map<std::string, int> local_var;
     std::stack<std::map<std::string, int>> scope;
     std::map<std::string, FunctionDefAst *> function_table;
     std::map<std::string, std::function<int(std::vector<Ast *>)>>

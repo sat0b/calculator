@@ -23,7 +23,9 @@ class Lexer {
     explicit Lexer(const std::string &code);
     Token next_token();
     Token read_token();
+    Token read_token(int offset);
     bool skip(TokenKind token_kind);
     void expect_skip(TokenKind token_kind);
     bool match(TokenKind token_kind);
+    bool match(TokenKind token_kind, int offset);
 };

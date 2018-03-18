@@ -24,6 +24,7 @@ enum TokenKind {
     GreaterEqual,
     Mod,
     For,
+    To,
     Comma,
     While,
     If,

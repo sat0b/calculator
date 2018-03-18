@@ -92,7 +92,8 @@ Token Lexer::lex() {
 
 Token Lexer::next_token() { return tokens[tkp++]; }
 
-Token Lexer::read_token() { return tokens[tkp]; }
+Token Lexer::read_token() { return read_token(0); }
+Token Lexer::read_token(int offset) { return tokens[tkp + offset]; }
 
 bool Lexer::skip(TokenKind token_kind) {
     Token token = read_token();
@@ -112,9 +113,13 @@ void Lexer::expect_skip(TokenKind token_kind) {
     }
 }
 
-bool Lexer::match(TokenKind token_kind) {
-    Token token = read_token();
+bool Lexer::match(TokenKind token_kind, int offset) {
+    Token token = read_token(offset);
     if (token.get_kind() == token_kind)
         return true;
     return false;
+}
+
+bool Lexer::match(TokenKind token_kind) {
+    return match(token_kind, 0);
 }

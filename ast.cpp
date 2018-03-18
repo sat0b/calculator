@@ -18,7 +18,10 @@ ExprAst::ExprAst(Ast *_left, Ast *_right, Token _token)
     : left(_left), right(_right), token(std::move(_token)) {}
 TokenKind ExprAst::get_type() { return Expr; }
 
-ForAst::ForAst(Ast *_cond, Ast *_block) : cond(_cond), block(_block) {}
+ForAst::ForAst(Ast *_cond, Ast *_block)
+    : cond(_cond), block(_block), range_loop(false) {}
+ForAst::ForAst(SymbolAst *_val, int _begin, int _end, Ast *_block)
+    : val(_val), begin(_begin), end(_end), block(_block), range_loop(true) {}
 TokenKind ForAst::get_type() { return For; }
 
 BlockAst::BlockAst(std::vector<Ast *> _stats) : stats(std::move(_stats)) {}
