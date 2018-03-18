@@ -103,13 +103,16 @@ void Runner::run(FunctionDefAst *ast) { function_table[ast->func_name] = ast; }
 
 void Runner::run(FunctionAst *ast) {
     std::string func_name = ast->func_name;
-    std::vector<int> args_value = ast->args;
+    std::vector<Ast *> args_value = ast->args;
     FunctionDefAst *func_ast = function_table[func_name];
     if (args_value.size() != func_ast->args.size())
         std::cerr << "Syntax error, the number of arguments do not match"
                   << std::endl;
-    for (int i = 0; i < args_value.size(); i++)
-        local_var[func_ast->args[i]] = args_value[i];
+    for (int i = 0; i < args_value.size(); i++) {
+        run(args_value[i]);
+        int arg_value = stack.pop();
+        local_var[func_ast->args[i]] = arg_value;
+    }
     scope.push(local_var);
     for (Ast *stat : func_ast->stats)
         run(stat);

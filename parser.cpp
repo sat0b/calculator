@@ -126,15 +126,19 @@ Ast *Parser::read_factor() {
     case Symbol: {
         if (lexer->skip(LeftBracket)) {
             std::string func_name = token.get_name();
-            std::vector<int> args;
+            std::vector<Ast *> args;
             for (;;) {
                 Token arg = lexer->next_token();
-                args.push_back(arg.get_value());
+                Ast *arg_ast;
+                if (arg.get_kind() == Symbol)
+                    arg_ast = new SymbolAst(arg);
+                else if (arg.get_kind() == Integer)
+                    arg_ast = new IntAst(arg);
+                args.push_back(arg_ast);
                 if (lexer->skip(RightBracket))
                     break;
                 lexer->expect_skip(Comma);
             }
-
             return new FunctionAst(func_name, args);
         }
         return new SymbolAst(token);

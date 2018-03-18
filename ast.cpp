@@ -37,7 +37,7 @@ FunctionDefAst::FunctionDefAst(std::string _func_name,
       stats(std::move(_stats)) {}
 TokenKind FunctionDefAst::get_type() { return FunctionDef; }
 
-FunctionAst::FunctionAst(std::string _func_name, std::vector<int> _args)
+FunctionAst::FunctionAst(std::string _func_name, std::vector<Ast *> _args)
     : func_name(std::move(_func_name)), args(std::move(_args)) {}
 TokenKind FunctionAst::get_type() { return Function; }
 

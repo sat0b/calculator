@@ -80,9 +80,9 @@ class FunctionDefAst : public Ast {
 
 class FunctionAst : public Ast {
   public:
-    std::vector<int> args;
+    std::vector<Ast *> args;
     std::string func_name;
-    FunctionAst(std::string func_name, std::vector<int> args);
+    FunctionAst(std::string func_name, std::vector<Ast *> args);
     TokenKind get_type() override;
 };
 
