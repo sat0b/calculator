@@ -23,6 +23,7 @@ class Runner {
     void run(AssignAst *ast);
     void run(PrintAst *ast);
     void run(IntAst *ast);
+    void run(StringAst *ast);
     void run(SymbolAst *ast);
     void run(ForAst *ast);
     void run(IfAst *ast);

@@ -35,6 +35,13 @@ class IntAst : public Ast {
     TokenKind get_type() override;
 };
 
+class StringAst : public Ast {
+public:
+    Token token;
+    explicit StringAst(Token token);
+    TokenKind get_type() override;
+};
+
 class ExprAst : public Ast {
   public:
     Ast *left, *right;

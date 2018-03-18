@@ -19,8 +19,14 @@ Ast *Parser::read_symbol_stat() {
 }
 
 Ast *Parser::read_print_stat() {
-    Ast *expr = read_expr(1);
-    return new PrintAst(expr);
+    Ast *ast;
+    if (lexer->match(String)) {
+        Token token = lexer->next_token();
+        ast = new StringAst(token);
+    } else {
+        ast = read_expr(1);
+    }
+    return new PrintAst(ast);
 }
 
 Ast *Parser::read_block() {
@@ -100,7 +106,6 @@ Ast *Parser::read_stat() {
     if (lexer->skip(Return))
         return read_return();
     parse_error("Syntax error");
-    return nullptr;
 }
 
 Ast *Parser::read_expr(int priority) {

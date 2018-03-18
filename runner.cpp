@@ -15,6 +15,9 @@ void Runner::run(Ast *ast) {
     case Integer:
         run(dynamic_cast<IntAst *>(ast));
         break;
+    case String:
+        run(dynamic_cast<StringAst *>(ast));
+        break;
     case Symbol:
         run(dynamic_cast<SymbolAst *>(ast));
         break;
@@ -49,14 +52,19 @@ void Runner::run(Ast *ast) {
 }
 
 void Runner::run(AssignAst *ast) {
-    auto sym_ast = dynamic_cast<SymbolAst *>(ast->dst);
     run(ast->src);
+    auto sym_ast = dynamic_cast<SymbolAst *>(ast->dst);
     global_var[sym_ast->token.get_name()] = stack.pop();
 }
 
-void Runner::run(PrintAst *ast) {
-    run(ast->ast);
-    std::cout << stack.pop() << std::endl;
+void Runner::run(PrintAst *print_ast) {
+    if (print_ast->ast->get_type() == String) {
+        auto str = dynamic_cast<StringAst*>(print_ast->ast);
+        std::cout << str->token.get_name() << std::endl;
+    } else {
+        run(print_ast->ast);
+        std::cout << stack.pop() << std::endl;
+    }
 }
 
 void Runner::run(ExprAst *ast) {
@@ -66,6 +74,8 @@ void Runner::run(ExprAst *ast) {
 }
 
 void Runner::run(IntAst *ast) { stack.push(ast->get_value()); }
+
+void Runner::run(StringAst *ast) { }
 
 void Runner::run(SymbolAst *ast) {
     std::string name = ast->token.get_name();

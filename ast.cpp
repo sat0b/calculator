@@ -43,3 +43,6 @@ TokenKind FunctionAst::get_type() { return Function; }
 
 ReturnAst::ReturnAst(Ast *_expr) : expr(_expr) {}
 TokenKind ReturnAst::get_type() { return Return; }
+
+StringAst::StringAst(Token _token) : token(_token){}
+TokenKind StringAst::get_type() { return String; }
