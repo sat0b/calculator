@@ -13,11 +13,13 @@ class Runner {
     std::map<std::string, int> local_var;
     std::stack<std::map<std::string, int>> scope;
     std::map<std::string, FunctionDefAst *> function_table;
+    std::map<std::string, std::function<int(std::vector<Ast *>)>> builtin_function_table;
     Stack stack;
 
   public:
     explicit Runner(std::vector<Ast *> _astvec);
     void run();
+    void make_builtin_function();
     void run(Ast *ast);
     void run(ExprAst *ast);
     void run(AssignAst *ast);

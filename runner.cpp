@@ -1,10 +1,43 @@
 #include "runner.h"
+#include <algorithm>
+#include <numeric>
 
 Runner::Runner(std::vector<Ast *> _astvec) : astvec(std::move(_astvec)) {}
 
 void Runner::run() {
+    make_builtin_function();
     for (Ast *ast : astvec)
         run(ast);
+}
+
+std::vector<int> convert_args(std::vector<Ast *> args) {
+    std::vector<int> iargs;
+    for (Ast *arg : args) {
+        int value = dynamic_cast<IntAst *>(arg)->get_value();
+        iargs.push_back(value);
+    }
+    return iargs;
+}
+
+int builtin_max(std::vector<Ast *> args) {
+    std::vector<int> iargs = convert_args(args);
+    return *std::max_element(iargs.begin(), iargs.end());
+}
+
+int builtin_min(std::vector<Ast *> args) {
+    std::vector<int> iargs = convert_args(args);
+    return *std::min_element(iargs.begin(), iargs.end());
+}
+
+int builtin_sum(std::vector<Ast *> args) {
+    std::vector<int> iargs = convert_args(args);
+    return std::accumulate(iargs.begin(), iargs.end(), 0);
+}
+
+void Runner::make_builtin_function() {
+    builtin_function_table["max"] = builtin_max;
+    builtin_function_table["min"] = builtin_min;
+    builtin_function_table["sum"] = builtin_sum;
 }
 
 void Runner::run(Ast *ast) {
@@ -114,6 +147,12 @@ void Runner::run(FunctionDefAst *ast) { function_table[ast->func_name] = ast; }
 void Runner::run(FunctionAst *ast) {
     std::string func_name = ast->func_name;
     std::vector<Ast *> args_value = ast->args;
+    // builtin function
+    if (builtin_function_table.count(func_name)) {
+        int value = builtin_function_table[func_name](args_value);
+        stack.push(value);
+        return;
+    }
     FunctionDefAst *func_ast = function_table[func_name];
     if (args_value.size() != func_ast->args.size())
         std::cerr << "Syntax error, the number of arguments do not match"
